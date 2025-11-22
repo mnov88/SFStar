@@ -13,7 +13,8 @@
 | Phase 0 - Setup | COMPLETE | Project structure, Package.swift, SFSafeSymbols |
 | Phase 1 - MVP Core | COMPLETE | All models, views, ViewModels, services |
 | Phase 2 - MVP Polish | COMPLETE | Category filter, iPad layouts, tests, error handling |
-| Phase 3-6 | PENDING | Product features |
+| Phase 3 - Product Foundation | COMPLETE | Tab navigation, iPad sidebar, collections, settings |
+| Phase 4-6 | PENDING | Product features |
 
 ---
 
@@ -32,7 +33,7 @@ This build plan synthesizes requirements from all project documentation to creat
 | **0 - Setup** | Project foundation | 1-2 hours | Xcode project, SFSafeSymbols, architecture | DONE |
 | **1 - MVP Core** | Browse & basic export | 2-3 days | Symbol grid, search, detail view, PNG export | DONE |
 | **2 - MVP Polish** | Complete MVP | 1-2 days | Categories, weights, copy name, iPad layouts | DONE |
-| **3 - Product Foundation** | Tab navigation & data | 2-3 days | Tab bar, favorites, persistence | PENDING |
+| **3 - Product Foundation** | Tab navigation & data | 2-3 days | Tab bar, favorites, persistence | DONE |
 | **4 - Product Features** | Advanced features | 3-4 days | Multi-scale export, code gen, semantic search | PENDING |
 | **5 - Product Complete** | Collections & batch | 2-3 days | Collections, batch export, SVG, settings | PENDING |
 | **6 - Polish** | Final refinements | 1-2 days | Liquid Glass, animations, testing | PENDING |

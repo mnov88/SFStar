@@ -10,23 +10,25 @@ iOS app for browsing, customizing, and exporting 6,900+ SF Symbols with code gen
 
 ## Features
 
-### MVP (Current)
+### Current Features
 - Browse 6,900+ SF Symbols in responsive grid
 - Real-time text search
 - Category filtering (15 categories)
 - Symbol detail view with weight customization
 - Export symbols as PNG (@2x)
 - Copy symbol name to clipboard
-- Favorites system
+- Favorites system with star toggle
+- Collections - organize symbols into groups
+- Tab bar navigation (iPhone)
+- Sidebar navigation (iPad)
 - Dark mode support
-- iPhone and iPad layouts
+- Comprehensive settings with data management
 
-### Coming in Product Release
+### Coming in Next Release
 - Multi-scale export (@1x/@2x/@3x)
 - SVG export
 - Code generation (SwiftUI/UIKit)
 - Semantic search
-- Collections
 - Batch export
 
 ## Architecture
@@ -34,6 +36,8 @@ iOS app for browsing, customizing, and exporting 6,900+ SF Symbols with code gen
 ```
 SFSymbolsBrowser/
 ├── App/                    # App entry point
+│   ├── SFSymbolsBrowserApp.swift
+│   └── ContentView.swift
 ├── Models/                 # Data structures
 │   ├── SymbolItem.swift
 │   ├── SymbolCategory.swift
@@ -43,10 +47,15 @@ SFSymbolsBrowser/
 │   ├── SymbolGridViewModel.swift
 │   └── SymbolDetailViewModel.swift
 ├── Views/                  # SwiftUI views
+│   ├── Navigation/        # Tab bar & sidebar navigation
+│   │   ├── MainTabView.swift
+│   │   └── iPadSidebarView.swift
 │   ├── Grid/              # Symbol grid views
 │   ├── Detail/            # Symbol detail views
 │   ├── Components/        # Reusable components
-│   ├── Favorites/         # Favorites views
+│   ├── Favorites/         # Favorites & collections
+│   │   ├── FavoritesView.swift
+│   │   └── CollectionDetailView.swift
 │   └── Settings/          # Settings views
 ├── Services/              # Business services
 │   ├── ExportService.swift

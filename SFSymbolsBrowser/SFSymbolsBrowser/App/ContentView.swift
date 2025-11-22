@@ -1,47 +1,26 @@
 import SwiftUI
 
+/// Root content view that switches between iPhone and iPad layouts
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         if horizontalSizeClass == .regular {
-            iPadMainView()
+            iPadSidebarView()
         } else {
-            iPhoneMainView()
+            MainTabView()
         }
     }
 }
 
-// MARK: - iPhone Layout
-struct iPhoneMainView: View {
-    var body: some View {
-        NavigationStack {
-            SymbolGridView()
-        }
-    }
-}
-
-// MARK: - iPad Layout
-struct iPadMainView: View {
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
-
-    var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            List {
-                NavigationLink {
-                    SymbolGridView()
-                } label: {
-                    Label("All Symbols", systemImage: "square.grid.2x2")
-                }
-            }
-            .navigationTitle("SF Symbols")
-        } detail: {
-            SymbolGridView()
-        }
-    }
-}
-
-#Preview {
+#Preview("iPhone") {
     ContentView()
         .environment(PersistenceService())
+        .environment(\.horizontalSizeClass, .compact)
+}
+
+#Preview("iPad") {
+    ContentView()
+        .environment(PersistenceService())
+        .environment(\.horizontalSizeClass, .regular)
 }
