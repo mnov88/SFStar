@@ -11,6 +11,7 @@ struct PremiumSymbolDetailView: View {
     @State private var viewModel: SymbolDetailViewModel
     @State private var showingExportSheet = false
     @State private var showingCollectionPicker = false
+    @State private var showingCodeGeneration = false
     @State private var exportResult: ExportResult?
     @State private var symbolAnimationTrigger = false
     @State private var showCopiedToast = false
@@ -28,6 +29,12 @@ struct PremiumSymbolDetailView: View {
 
                 // Weight selector
                 weightSection
+
+                // Color picker
+                colorSection
+
+                // Rendering mode
+                renderingModeSection
 
                 // Quick actions
                 actionsSection
@@ -48,10 +55,23 @@ struct PremiumSymbolDetailView: View {
             toolbarContent
         }
         .sheet(isPresented: $showingExportSheet) {
-            PremiumExportSheet(symbol: symbol, viewModel: viewModel)
+            PremiumExportOptionsSheet(
+                symbol: symbol,
+                weight: viewModel.selectedWeight,
+                color: viewModel.selectedColor,
+                renderingMode: viewModel.selectedRenderingMode
+            )
         }
         .sheet(isPresented: $showingCollectionPicker) {
             CollectionPickerSheet(symbol: symbol)
+        }
+        .sheet(isPresented: $showingCodeGeneration) {
+            PremiumCodeGenerationView(
+                symbol: symbol,
+                weight: viewModel.selectedWeight,
+                color: viewModel.selectedColor,
+                renderingMode: viewModel.selectedRenderingMode
+            )
         }
         .overlay(alignment: .bottom) {
             if showCopiedToast {
@@ -119,7 +139,7 @@ struct PremiumSymbolDetailView: View {
                 Image(systemName: symbol.name)
                     .font(.system(size: 72))
                     .fontWeight(viewModel.configuration.weight)
-                    .symbolRenderingMode(.hierarchical)
+                    .symbolRenderingMode(viewModel.selectedRenderingMode)
                     .foregroundStyle(symbolGradient)
                     .scaleEffect(values.scale)
                     .rotationEffect(.degrees(values.rotation))
@@ -145,13 +165,21 @@ struct PremiumSymbolDetailView: View {
             Image(systemName: symbol.name)
                 .font(.system(size: 72))
                 .fontWeight(viewModel.configuration.weight)
-                .symbolRenderingMode(.hierarchical)
+                .symbolRenderingMode(viewModel.selectedRenderingMode)
                 .foregroundStyle(symbolGradient)
         }
     }
 
     private var symbolGradient: LinearGradient {
-        LinearGradient(
+        // Use user-selected color if not default, otherwise use gradient based on favorite status
+        if viewModel.selectedColor != .primary {
+            return LinearGradient(
+                colors: [viewModel.selectedColor, viewModel.selectedColor.opacity(0.7)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+        return LinearGradient(
             colors: persistence.isFavorite(symbol)
                 ? [.pink, .orange]
                 : DesignSystem.Gradient.ocean,
@@ -186,6 +214,24 @@ struct PremiumSymbolDetailView: View {
         }
         .padding()
         .glassEffect()
+    }
+
+    // MARK: - Color Section
+    private var colorSection: some View {
+        PremiumSymbolColorPicker(selectedColor: $viewModel.selectedColor) { _ in
+            triggerSymbolAnimation()
+        }
+    }
+
+    // MARK: - Rendering Mode Section
+    private var renderingModeSection: some View {
+        PremiumRenderingModePicker(
+            selectedMode: $viewModel.selectedRenderingMode,
+            symbolName: symbol.name,
+            color: viewModel.selectedColor
+        ) { _ in
+            triggerSymbolAnimation()
+        }
     }
 
     // MARK: - Actions Section
@@ -227,6 +273,18 @@ struct PremiumSymbolDetailView: View {
                     HapticManager.shared.lightTap()
                 }
 
+                // Code Generation button
+                PremiumActionButton(
+                    icon: .chevronLeftForwardslashChevronRight,
+                    title: "Code",
+                    gradient: [.purple, .indigo]
+                ) {
+                    showingCodeGeneration = true
+                    HapticManager.shared.lightTap()
+                }
+            }
+
+            HStack(spacing: DesignSystem.Spacing.md) {
                 // Copy button
                 PremiumActionButton(
                     icon: .docOnDoc,
@@ -235,6 +293,16 @@ struct PremiumSymbolDetailView: View {
                 ) {
                     copySymbolName()
                 }
+
+                // Collection button
+                PremiumActionButton(
+                    icon: .folderBadgePlus,
+                    title: "Collection",
+                    gradient: [.blue, .cyan]
+                ) {
+                    showingCollectionPicker = true
+                    HapticManager.shared.lightTap()
+                }
             }
         }
     }
@@ -242,13 +310,22 @@ struct PremiumSymbolDetailView: View {
     // MARK: - Info Section
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-            Text("Information")
-                .font(.headline)
+            HStack {
+                Text("Information")
+                    .font(.headline)
+
+                Spacer()
+
+                // Compatibility badge
+                PremiumCompatibilityBadge(
+                    symbolName: symbol.name,
+                    targetVersion: persistence.settings.targetIOSVersion
+                )
+            }
 
             VStack(spacing: DesignSystem.Spacing.sm) {
                 InfoRow(label: "Name", value: symbol.name)
                 InfoRow(label: "Categories", value: symbol.categories.map { $0.displayName }.joined(separator: ", "))
-                InfoRow(label: "iOS Version", value: "13.0+")
             }
         }
         .padding()

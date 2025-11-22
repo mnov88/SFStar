@@ -113,6 +113,27 @@ final class SymbolDetailViewModel {
         selectedColor = .primary
         selectedRenderingMode = .monochrome
     }
+
+    /// Set weight with haptic feedback
+    @MainActor
+    func setWeight(_ weight: Font.Weight) {
+        selectedWeight = weight
+        provideFeedback(.selection)
+    }
+
+    /// Set color with haptic feedback
+    @MainActor
+    func setColor(_ color: Color) {
+        selectedColor = color
+        provideFeedback(.selection)
+    }
+
+    /// Set rendering mode with haptic feedback
+    @MainActor
+    func setRenderingMode(_ mode: SymbolRenderingMode) {
+        selectedRenderingMode = mode
+        provideFeedback(.selection)
+    }
 }
 
 // MARK: - Supporting Types

@@ -9,6 +9,8 @@ struct SymbolDetailView: View {
     @Environment(PersistenceService.self) private var persistence
 
     @State private var viewModel: SymbolDetailViewModel
+    @State private var showingExportOptions = false
+    @State private var showingCodeGeneration = false
 
     init(symbol: SymbolItem) {
         self.symbol = symbol
@@ -21,7 +23,7 @@ struct SymbolDetailView: View {
                 // Large Preview
                 symbolPreview
 
-                // Symbol Name
+                // Symbol Name with Compatibility
                 symbolNameSection
 
                 // Customization Options
@@ -42,6 +44,22 @@ struct SymbolDetailView: View {
         }
         .overlay {
             toastOverlay
+        }
+        .sheet(isPresented: $showingExportOptions) {
+            ExportOptionsSheet(
+                symbol: symbol,
+                weight: viewModel.selectedWeight,
+                color: viewModel.selectedColor,
+                renderingMode: viewModel.selectedRenderingMode
+            )
+        }
+        .sheet(isPresented: $showingCodeGeneration) {
+            CodeGenerationView(
+                symbol: symbol,
+                weight: viewModel.selectedWeight,
+                color: viewModel.selectedColor,
+                renderingMode: viewModel.selectedRenderingMode
+            )
         }
         .alert(
             "Export Error",
@@ -77,13 +95,11 @@ struct SymbolDetailView: View {
                 .foregroundStyle(.primary)
                 .textSelection(.enabled)
 
-            HStack(spacing: 4) {
-                Image(systemSymbol: .checkmarkCircleFill)
-                    .foregroundStyle(.green)
-                Text("iOS 13.0+")
-                    .foregroundStyle(.secondary)
-            }
-            .font(.caption)
+            // Compatibility badge
+            CompatibilityBadge(
+                symbolName: symbol.name,
+                targetVersion: persistence.settings.targetIOSVersion
+            )
         }
     }
 
@@ -92,6 +108,20 @@ struct SymbolDetailView: View {
         VStack(spacing: 20) {
             // Weight Selector
             WeightSelectorView(selectedWeight: $viewModel.selectedWeight)
+
+            Divider()
+
+            // Color Picker
+            SymbolColorPicker(selectedColor: $viewModel.selectedColor)
+
+            Divider()
+
+            // Rendering Mode Picker
+            RenderingModePicker(
+                selectedMode: $viewModel.selectedRenderingMode,
+                symbolName: symbol.name,
+                color: viewModel.selectedColor
+            )
 
             Divider()
         }
@@ -131,37 +161,67 @@ struct SymbolDetailView: View {
     // MARK: - Action Buttons
     private var actionButtons: some View {
         VStack(spacing: 12) {
-            // Export Button
-            Button {
-                Task {
-                    await viewModel.exportPNG()
-                }
-            } label: {
-                HStack {
-                    if viewModel.isExporting {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
+            // Primary action row
+            HStack(spacing: 12) {
+                // Export Button
+                Button {
+                    showingExportOptions = true
+                } label: {
+                    HStack {
                         Image(systemSymbol: .squareAndArrowDown)
+                        Text("Export")
                     }
-                    Text(viewModel.isExporting ? "Exporting..." : "Export PNG @2x")
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(viewModel.isExporting)
+                .buttonStyle(.borderedProminent)
 
-            // Copy Name Button
-            Button {
-                viewModel.copyName()
-            } label: {
-                HStack {
-                    Image(systemSymbol: .docOnDoc)
-                    Text("Copy Name")
+                // Code Generation Button
+                Button {
+                    showingCodeGeneration = true
+                } label: {
+                    HStack {
+                        Image(systemSymbol: .chevronLeftForwardslashChevronRight)
+                        Text("Code")
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
+
+            // Secondary action row
+            HStack(spacing: 12) {
+                // Copy Name Button
+                Button {
+                    viewModel.copyName()
+                } label: {
+                    HStack {
+                        Image(systemSymbol: .docOnDoc)
+                        Text("Copy Name")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+                // Add to Collection Button
+                if !persistence.collections.isEmpty {
+                    Menu {
+                        ForEach(persistence.collections) { collection in
+                            Button {
+                                persistence.addToCollection(symbol, collection: collection)
+                            } label: {
+                                Label(collection.name, systemImage: "folder")
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemSymbol: .folderBadgePlus)
+                            Text("Collection")
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
         }
         .padding(.horizontal)
     }
