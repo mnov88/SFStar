@@ -150,6 +150,9 @@ struct PremiumRenderingModeCard: View {
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.02 : 1.0)
         .animation(DesignSystem.Animation.snappy, value: isSelected)
+        .accessibilityLabel("\(mode.displayName) rendering mode")
+        .accessibilityHint(mode.description)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

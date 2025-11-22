@@ -44,6 +44,8 @@ struct PremiumSymbolCellView: View {
         .overlay(alignment: .topTrailing) {
             favoriteIndicator
         }
+        .accessibilityLabel("\(symbol.name)\(isFavorite ? ", favorite" : "")")
+        .accessibilityHint("Double tap to view details, long press to toggle favorite")
     }
 
     // MARK: - Symbol Content with PhaseAnimator

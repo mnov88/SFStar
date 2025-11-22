@@ -416,6 +416,8 @@ struct PremiumWeightButton: View {
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.05 : 1.0)
         .animation(DesignSystem.Animation.snappy, value: isSelected)
+        .accessibilityLabel("\(weight.displayName) weight")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -450,6 +452,7 @@ struct PremiumActionButton: View {
             )
         }
         .buttonStyle(PremiumCellButtonStyle())
+        .accessibilityLabel(title)
     }
 }
 
@@ -471,111 +474,6 @@ struct InfoRow: View {
                 .lineLimit(1)
         }
         .padding(.vertical, DesignSystem.Spacing.xs)
-    }
-}
-
-// MARK: - Premium Export Sheet
-struct PremiumExportSheet: View {
-    let symbol: SymbolItem
-    @ObservedObject var viewModel: SymbolDetailViewModel
-    @Environment(\.dismiss) private var dismiss
-    @State private var isExporting = false
-    @State private var exportSuccess = false
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: DesignSystem.Spacing.xl) {
-                // Preview
-                Image(systemName: symbol.name)
-                    .font(.system(size: 80))
-                    .fontWeight(viewModel.configuration.weight)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.primary)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: DesignSystem.Radius.large, style: .continuous)
-                            .fill(Color(.systemGray6))
-                    )
-
-                // Export options
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-                    Text("Export Settings")
-                        .font(.headline)
-
-                    // Format picker would go here
-                    Text("PNG @2x")
-                        .foregroundStyle(.secondary)
-                }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .glassEffect()
-
-                Spacer()
-
-                // Export button
-                Button {
-                    performExport()
-                } label: {
-                    HStack {
-                        if isExporting {
-                            ProgressView()
-                                .tint(.white)
-                        } else if exportSuccess {
-                            Image(systemSymbol: .checkmark)
-                        } else {
-                            Image(systemSymbol: .squareAndArrowUp)
-                        }
-
-                        Text(exportSuccess ? "Exported!" : "Export PNG")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(
-                        LinearGradient(
-                            colors: exportSuccess ? [.green, .mint] : DesignSystem.Gradient.ocean,
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .clipShape(Capsule())
-                }
-                .disabled(isExporting)
-                .padding(.horizontal)
-            }
-            .padding()
-            .navigationTitle("Export Symbol")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-
-    private func performExport() {
-        isExporting = true
-        HapticManager.shared.lightTap()
-
-        Task {
-            // Simulate export
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-
-            await MainActor.run {
-                isExporting = false
-                exportSuccess = true
-                HapticManager.shared.celebration()
-            }
-
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            await MainActor.run {
-                dismiss()
-            }
-        }
     }
 }
 

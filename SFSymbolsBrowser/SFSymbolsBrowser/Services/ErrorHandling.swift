@@ -58,9 +58,10 @@ extension Result where Success == Void {
 
 // MARK: - Error Handling Utilities
 @MainActor
-final class ErrorHandler: ObservableObject {
-    @Published var currentError: AppError?
-    @Published var isShowingError: Bool = false
+@Observable
+final class ErrorHandler {
+    var currentError: AppError?
+    var isShowingError: Bool = false
 
     func handle(_ error: Error) {
         if let appError = error as? AppError {
