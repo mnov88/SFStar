@@ -132,7 +132,7 @@ final class PersistenceService: @unchecked Sendable {
 }
 
 // MARK: - Symbol Collection
-struct SymbolCollection: Identifiable, Codable, Equatable, Sendable {
+struct SymbolCollection: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     var name: String
     var symbolNames: [String]

@@ -284,25 +284,13 @@ struct PremiumSymbolDetailView: View {
                 }
             }
 
-            HStack(spacing: DesignSystem.Spacing.md) {
-                // Copy button
-                PremiumActionButton(
-                    icon: .docOnDoc,
-                    title: "Copy",
-                    gradient: [.green, .mint]
-                ) {
-                    copySymbolName()
-                }
-
-                // Collection button
-                PremiumActionButton(
-                    icon: .folderBadgePlus,
-                    title: "Collection",
-                    gradient: [.blue, .cyan]
-                ) {
-                    showingCollectionPicker = true
-                    HapticManager.shared.lightTap()
-                }
+            // Copy button (full width)
+            PremiumActionButton(
+                icon: .docOnDoc,
+                title: "Copy Name",
+                gradient: [.green, .mint]
+            ) {
+                copySymbolName()
             }
         }
     }
