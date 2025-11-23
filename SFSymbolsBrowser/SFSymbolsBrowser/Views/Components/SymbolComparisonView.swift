@@ -445,7 +445,7 @@ struct SymbolWeightVariantsRow: View {
 
 #Preview {
     SymbolComparisonView(
-        primarySymbol: SymbolItem(symbol: .heartFill, category: .health)
+        primarySymbol: SymbolItem(symbol: .heartFill)
     )
 }
 
