@@ -12,6 +12,7 @@ struct PremiumSymbolDetailView: View {
     @State private var showingExportSheet = false
     @State private var showingCollectionPicker = false
     @State private var showingCodeGeneration = false
+    @State private var showingComparison = false
     @State private var exportResult: ExportResult?
     @State private var symbolAnimationTrigger = false
     @State private var showCopiedToast = false
@@ -35,6 +36,11 @@ struct PremiumSymbolDetailView: View {
 
                 // Rendering mode
                 renderingModeSection
+
+                // Symbol effects (iOS 17+)
+                if #available(iOS 17.0, *) {
+                    effectsSection
+                }
 
                 // Quick actions
                 actionsSection
@@ -70,8 +76,12 @@ struct PremiumSymbolDetailView: View {
                 symbol: symbol,
                 weight: viewModel.selectedWeight,
                 color: viewModel.selectedColor,
-                renderingMode: viewModel.selectedRenderingMode
+                renderingMode: viewModel.selectedRenderingMode,
+                effectConfiguration: viewModel.effectConfiguration
             )
+        }
+        .sheet(isPresented: $showingComparison) {
+            SymbolComparisonView(primarySymbol: symbol)
         }
         .overlay(alignment: .bottom) {
             if showCopiedToast {
@@ -234,6 +244,18 @@ struct PremiumSymbolDetailView: View {
         }
     }
 
+    // MARK: - Effects Section
+    @available(iOS 17.0, *)
+    private var effectsSection: some View {
+        SymbolEffectPicker(
+            configuration: $viewModel.effectConfiguration,
+            symbolName: symbol.name,
+            weight: viewModel.selectedWeight,
+            color: viewModel.selectedColor,
+            renderingMode: viewModel.selectedRenderingMode
+        )
+    }
+
     // MARK: - Actions Section
     private var actionsSection: some View {
         VStack(spacing: DesignSystem.Spacing.md) {
@@ -284,13 +306,25 @@ struct PremiumSymbolDetailView: View {
                 }
             }
 
-            // Copy button (full width)
-            PremiumActionButton(
-                icon: .docOnDoc,
-                title: "Copy Name",
-                gradient: [.green, .mint]
-            ) {
-                copySymbolName()
+            HStack(spacing: DesignSystem.Spacing.md) {
+                // Compare button
+                PremiumActionButton(
+                    icon: .rectangleOnRectangle,
+                    title: "Compare",
+                    gradient: [.orange, .yellow]
+                ) {
+                    showingComparison = true
+                    HapticManager.shared.lightTap()
+                }
+
+                // Copy button
+                PremiumActionButton(
+                    icon: .docOnDoc,
+                    title: "Copy Name",
+                    gradient: [.green, .mint]
+                ) {
+                    copySymbolName()
+                }
             }
         }
     }

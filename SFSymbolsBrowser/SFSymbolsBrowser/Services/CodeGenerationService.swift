@@ -18,7 +18,8 @@ struct CodeGenerationService {
         color: Color,
         renderingMode: SymbolRenderingMode,
         size: CGFloat = 32,
-        framework: Framework
+        framework: Framework,
+        effectConfiguration: SymbolEffectConfiguration? = nil
     ) -> String {
         switch framework {
         case .swiftUI:
@@ -27,7 +28,8 @@ struct CodeGenerationService {
                 weight: weight,
                 color: color,
                 renderingMode: renderingMode,
-                size: size
+                size: size,
+                effectConfiguration: effectConfiguration
             )
         case .uiKit:
             return generateUIKitCode(
@@ -35,7 +37,8 @@ struct CodeGenerationService {
                 weight: weight,
                 color: color,
                 renderingMode: renderingMode,
-                size: size
+                size: size,
+                effectConfiguration: effectConfiguration
             )
         }
     }
@@ -47,7 +50,8 @@ struct CodeGenerationService {
         weight: Font.Weight,
         color: Color,
         renderingMode: SymbolRenderingMode,
-        size: CGFloat
+        size: CGFloat,
+        effectConfiguration: SymbolEffectConfiguration?
     ) -> String {
         var lines: [String] = []
 
@@ -67,7 +71,93 @@ struct CodeGenerationService {
         let weightName = swiftUIWeightName(weight)
         lines.append("    .font(.system(size: \(Int(size)), weight: .\(weightName)))")
 
+        // Symbol effect (if configured)
+        if let config = effectConfiguration, config.effectType != .none {
+            lines.append(generateSwiftUIEffectCode(config))
+        }
+
         return lines.joined(separator: "\n")
+    }
+
+    /// Generate SwiftUI symbol effect code
+    private func generateSwiftUIEffectCode(_ config: SymbolEffectConfiguration) -> String {
+        let effectCode: String
+        let optionsCode = generateEffectOptionsCode(config)
+
+        switch config.effectType {
+        case .none:
+            return ""
+
+        case .bounce:
+            let direction = config.direction == .down ? ".down" : ".up"
+            let scope = config.scope == .byLayer ? ".byLayer" : ".wholeSymbol"
+            effectCode = ".bounce\(direction)\(scope)"
+
+        case .pulse:
+            let scope = config.scope == .byLayer ? ".byLayer" : ".wholeSymbol"
+            effectCode = ".pulse\(scope)"
+
+        case .variableColor:
+            var effect = ".variableColor"
+            effect += config.variableColorStyle == .cumulative ? ".cumulative" : ".iterative"
+            if config.reversing {
+                effect += ".reversing"
+            }
+            effectCode = effect
+
+        case .breathe:
+            effectCode = ".breathe"
+
+        case .wiggle:
+            let direction: String
+            switch config.direction {
+            case .up: direction = ".up"
+            case .down: direction = ".down"
+            case .left: direction = ".left"
+            case .right: direction = ".right"
+            case .clockwise: direction = ".clockwise"
+            case .counterClockwise: direction = ".counterClockwise"
+            }
+            effectCode = ".wiggle\(direction)"
+
+        case .rotate:
+            let direction = config.direction == .counterClockwise ? ".counterClockwise" : ".clockwise"
+            effectCode = ".rotate\(direction)"
+
+        case .scale:
+            let direction = config.direction == .down ? ".down" : ".up"
+            let scope = config.scope == .byLayer ? ".byLayer" : ".wholeSymbol"
+            effectCode = ".scale\(direction)\(scope)"
+        }
+
+        if config.repeatOption == .continuous {
+            return "    .symbolEffect(\(effectCode)\(optionsCode))"
+        } else {
+            return "    .symbolEffect(\(effectCode)\(optionsCode), value: trigger)"
+        }
+    }
+
+    /// Generate effect options code
+    private func generateEffectOptionsCode(_ config: SymbolEffectConfiguration) -> String {
+        var options: [String] = []
+
+        // Speed
+        if config.speed != .normal {
+            options.append(".speed(\(config.speed.multiplier))")
+        }
+
+        // Repeat
+        if let count = config.repeatOption.count {
+            options.append(".repeat(\(count))")
+        } else {
+            options.append(".repeating")
+        }
+
+        if options.isEmpty {
+            return ""
+        }
+
+        return ", options: " + options.joined(separator: "")
     }
 
     // MARK: - UIKit Code Generation
@@ -77,7 +167,8 @@ struct CodeGenerationService {
         weight: Font.Weight,
         color: Color,
         renderingMode: SymbolRenderingMode,
-        size: CGFloat
+        size: CGFloat,
+        effectConfiguration: SymbolEffectConfiguration?
     ) -> String {
         var lines: [String] = []
 
@@ -119,6 +210,73 @@ struct CodeGenerationService {
                 break
             }
         }
+
+        // Symbol effect (if configured)
+        if let config = effectConfiguration, config.effectType != .none {
+            lines.append("")
+            lines.append(generateUIKitEffectCode(config))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    /// Generate UIKit symbol effect code
+    private func generateUIKitEffectCode(_ config: SymbolEffectConfiguration) -> String {
+        var lines: [String] = []
+        lines.append("// Symbol Effect (iOS 17+)")
+
+        let effectCode: String
+        switch config.effectType {
+        case .none:
+            return ""
+
+        case .bounce:
+            let direction = config.direction == .down ? ".effectWithDown" : ""
+            let scope = config.scope == .byLayer ? ".effectWithByLayer" : ".effectWithWholeSymbol"
+            effectCode = "[[[NSSymbolBounceEffect effect]\(direction)]\(scope)]"
+
+        case .pulse:
+            let scope = config.scope == .byLayer ? ".effectWithByLayer" : ".effectWithWholeSymbol"
+            effectCode = "[[NSSymbolPulseEffect effect]\(scope)]"
+
+        case .variableColor:
+            var effect = "[NSSymbolVariableColorEffect effect]"
+            if config.variableColorStyle == .cumulative {
+                effect = "[\(effect) effectWithCumulative]"
+            } else {
+                effect = "[\(effect) effectWithIterative]"
+            }
+            if config.reversing {
+                effect = "[\(effect) effectWithReversing]"
+            }
+            effectCode = effect
+
+        case .breathe:
+            effectCode = "[NSSymbolBreatheEffect effect]"
+
+        case .wiggle:
+            let direction: String
+            switch config.direction {
+            case .up: direction = ".effectWithUp"
+            case .down: direction = ".effectWithDown"
+            case .left: direction = ".effectWithLeft"
+            case .right: direction = ".effectWithRight"
+            case .clockwise: direction = ".effectWithClockwise"
+            case .counterClockwise: direction = ".effectWithCounterClockwise"
+            }
+            effectCode = "[[NSSymbolWiggleEffect effect]\(direction)]"
+
+        case .rotate:
+            let direction = config.direction == .counterClockwise ? ".effectWithCounterClockwise" : ".effectWithClockwise"
+            effectCode = "[[NSSymbolRotateEffect effect]\(direction)]"
+
+        case .scale:
+            let direction = config.direction == .down ? ".effectWithDown" : ".effectWithUp"
+            let scope = config.scope == .byLayer ? ".effectWithByLayer" : ".effectWithWholeSymbol"
+            effectCode = "[[[NSSymbolScaleEffect effect]\(direction)]\(scope)]"
+        }
+
+        lines.append("imageView.addSymbolEffect(\(effectCode))")
 
         return lines.joined(separator: "\n")
     }

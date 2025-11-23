@@ -7,6 +7,7 @@ struct CodeGenerationView: View {
     let weight: Font.Weight
     let color: Color
     let renderingMode: SymbolRenderingMode
+    var effectConfiguration: SymbolEffectConfiguration? = nil
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedFramework: CodeGenerationService.Framework = .swiftUI
@@ -21,7 +22,8 @@ struct CodeGenerationView: View {
             color: color,
             renderingMode: renderingMode,
             size: 32,
-            framework: selectedFramework
+            framework: selectedFramework,
+            effectConfiguration: effectConfiguration
         )
     }
 
@@ -181,6 +183,7 @@ struct PremiumCodeGenerationView: View {
     let weight: Font.Weight
     let color: Color
     let renderingMode: SymbolRenderingMode
+    var effectConfiguration: SymbolEffectConfiguration? = nil
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedFramework: CodeGenerationService.Framework = .swiftUI
@@ -196,7 +199,8 @@ struct PremiumCodeGenerationView: View {
             color: color,
             renderingMode: renderingMode,
             size: 32,
-            framework: selectedFramework
+            framework: selectedFramework,
+            effectConfiguration: effectConfiguration
         )
     }
 

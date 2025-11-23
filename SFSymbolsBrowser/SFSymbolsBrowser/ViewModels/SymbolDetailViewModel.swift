@@ -10,6 +10,9 @@ final class SymbolDetailViewModel {
     var selectedColor: Color = .primary
     var selectedRenderingMode: SymbolRenderingMode = .monochrome
 
+    // Symbol effect configuration
+    var effectConfiguration: SymbolEffectConfiguration = SymbolEffectConfiguration()
+
     var isExporting: Bool = false
     var exportError: ExportError? = nil
     var showExportSuccess: Bool = false
@@ -112,6 +115,14 @@ final class SymbolDetailViewModel {
         selectedWeight = .regular
         selectedColor = .primary
         selectedRenderingMode = .monochrome
+        effectConfiguration = SymbolEffectConfiguration()
+    }
+
+    /// Set effect configuration with haptic feedback
+    @MainActor
+    func setEffectConfiguration(_ config: SymbolEffectConfiguration) {
+        effectConfiguration = config
+        provideFeedback(.selection)
     }
 
     /// Set weight with haptic feedback
