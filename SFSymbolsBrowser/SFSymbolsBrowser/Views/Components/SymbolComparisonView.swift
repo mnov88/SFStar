@@ -464,19 +464,19 @@ extension Font.Weight {
 
 #Preview {
     SymbolComparisonView(
-        primarySymbol: SymbolItem(name: "heart.fill", categories: [.general])
+        primarySymbol: SymbolItem(symbol: .heartFill, category: .general)
     )
 }
 
 #Preview("Multi-Symbol Grid") {
     MultiSymbolGridPreview(
         symbols: [
-            SymbolItem(name: "heart.fill", categories: []),
-            SymbolItem(name: "star.fill", categories: []),
-            SymbolItem(name: "bell.fill", categories: []),
-            SymbolItem(name: "bookmark.fill", categories: []),
-            SymbolItem(name: "flag.fill", categories: []),
-            SymbolItem(name: "tag.fill", categories: [])
+            SymbolItem(symbol: .heartFill),
+            SymbolItem(symbol: .starFill),
+            SymbolItem(symbol: .bellFill),
+            SymbolItem(symbol: .bookmarkFill),
+            SymbolItem(symbol: .flagFill),
+            SymbolItem(symbol: .tagFill)
         ],
         weight: .regular,
         color: .blue,
