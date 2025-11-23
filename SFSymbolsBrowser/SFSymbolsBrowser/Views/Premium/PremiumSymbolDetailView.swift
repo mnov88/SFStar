@@ -347,7 +347,7 @@ struct PremiumSymbolDetailView: View {
 
             VStack(spacing: DesignSystem.Spacing.sm) {
                 InfoRow(label: "Name", value: symbol.name)
-                InfoRow(label: "Categories", value: symbol.categories.map { $0.displayName }.joined(separator: ", "))
+                InfoRow(label: "Category", value: symbol.category.rawValue)
             }
         }
         .padding()
@@ -597,7 +597,7 @@ struct CollectionPickerSheet: View {
 
 #Preview {
     NavigationStack {
-        PremiumSymbolDetailView(symbol: SymbolItem(symbol: .heartFill, category: .general))
+        PremiumSymbolDetailView(symbol: SymbolItem(symbol: .heartFill, category: .health))
     }
     .environment(PersistenceService())
 }

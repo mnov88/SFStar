@@ -208,19 +208,19 @@ struct PremiumCellButtonStyle: ButtonStyle {
 #Preview {
     VStack(spacing: 20) {
         HStack(spacing: 16) {
-            PremiumSymbolCellView(symbol: SymbolItem(symbol: .heartFill, category: .general), isFavorite: false)
-            PremiumSymbolCellView(symbol: SymbolItem(symbol: .heartFill, category: .general), isFavorite: true)
+            PremiumSymbolCellView(symbol: SymbolItem(symbol: .heartFill, category: .health), isFavorite: false)
+            PremiumSymbolCellView(symbol: SymbolItem(symbol: .heartFill, category: .health), isFavorite: true)
         }
 
         HStack(spacing: 16) {
             SelectablePremiumSymbolCellView(
-                symbol: SymbolItem(symbol: .heartFill, category: .general),
+                symbol: SymbolItem(symbol: .heartFill, category: .health),
                 isFavorite: false,
                 isSelected: false,
                 onSelect: {}
             )
             SelectablePremiumSymbolCellView(
-                symbol: SymbolItem(symbol: .heartFill, category: .general),
+                symbol: SymbolItem(symbol: .heartFill, category: .health),
                 isFavorite: true,
                 isSelected: true,
                 onSelect: {}

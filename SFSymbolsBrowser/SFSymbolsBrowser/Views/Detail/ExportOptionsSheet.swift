@@ -179,7 +179,7 @@ struct ExportOptionsSheet: View {
         }
 
         return selectedScales.sorted().map { scale in
-            "\(symbol.name)\(scale.fileSuffix).png"
+            "\(symbol.name)\(scale.label).png"
         }
     }
 
@@ -473,7 +473,7 @@ struct PremiumExportOptionsSheet: View {
 
 #Preview {
     ExportOptionsSheet(
-        symbol: SymbolItem(symbol: .heartFill, category: .general),
+        symbol: SymbolItem(symbol: .heartFill, category: .health),
         weight: .regular,
         color: .pink,
         renderingMode: .hierarchical
@@ -483,7 +483,7 @@ struct PremiumExportOptionsSheet: View {
 
 #Preview("Premium") {
     PremiumExportOptionsSheet(
-        symbol: SymbolItem(symbol: .heartFill, category: .general),
+        symbol: SymbolItem(symbol: .heartFill, category: .health),
         weight: .regular,
         color: .pink,
         renderingMode: .hierarchical
