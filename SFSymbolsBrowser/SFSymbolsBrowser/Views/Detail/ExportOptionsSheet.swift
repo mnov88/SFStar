@@ -473,7 +473,7 @@ struct PremiumExportOptionsSheet: View {
 
 #Preview {
     ExportOptionsSheet(
-        symbol: SymbolItem(symbol: .heartFill, category: .health),
+        symbol: SymbolItem(symbol: .heartFill),
         weight: .regular,
         color: .pink,
         renderingMode: .hierarchical
@@ -483,7 +483,7 @@ struct PremiumExportOptionsSheet: View {
 
 #Preview("Premium") {
     PremiumExportOptionsSheet(
-        symbol: SymbolItem(symbol: .heartFill, category: .health),
+        symbol: SymbolItem(symbol: .heartFill),
         weight: .regular,
         color: .pink,
         renderingMode: .hierarchical

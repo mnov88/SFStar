@@ -597,7 +597,7 @@ struct CollectionPickerSheet: View {
 
 #Preview {
     NavigationStack {
-        PremiumSymbolDetailView(symbol: SymbolItem(symbol: .heartFill, category: .health))
+        PremiumSymbolDetailView(symbol: SymbolItem(symbol: .heartFill))
     }
     .environment(PersistenceService())
 }
