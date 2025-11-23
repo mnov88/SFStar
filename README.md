@@ -31,10 +31,31 @@ iOS app for browsing, customizing, and exporting 6,900+ SF Symbols with code gen
 - Semantic search
 - Batch export
 
-## Architecture
+## Project Structure
 
 ```
-SFSymbolsBrowser/
+SFStar/
+├── README.md               # This file
+├── SFSymbolsBrowser/       # Swift Package
+│   ├── Package.swift       # Package definition
+│   ├── SFSymbolsBrowser/   # App source code
+│   │   ├── App/            # App entry point
+│   │   ├── Models/         # Data structures
+│   │   ├── ViewModels/     # Business logic (@Observable)
+│   │   ├── Views/          # SwiftUI views
+│   │   ├── Services/       # Business services
+│   │   └── Repositories/   # Data access
+│   └── SFSymbolsBrowserTests/
+└── docs/                   # Documentation
+    ├── PRD.md              # Product requirements
+    ├── BUILD-PLAN-AI-ASSISTED.md
+    └── mustread/           # Reference materials
+```
+
+### App Architecture
+
+```
+SFSymbolsBrowser/SFSymbolsBrowser/
 ├── App/                    # App entry point
 │   ├── SFSymbolsBrowserApp.swift
 │   └── ContentView.swift
@@ -48,14 +69,10 @@ SFSymbolsBrowser/
 │   └── SymbolDetailViewModel.swift
 ├── Views/                  # SwiftUI views
 │   ├── Navigation/        # Tab bar & sidebar navigation
-│   │   ├── MainTabView.swift
-│   │   └── iPadSidebarView.swift
 │   ├── Grid/              # Symbol grid views
 │   ├── Detail/            # Symbol detail views
 │   ├── Components/        # Reusable components
 │   ├── Favorites/         # Favorites & collections
-│   │   ├── FavoritesView.swift
-│   │   └── CollectionDetailView.swift
 │   └── Settings/          # Settings views
 ├── Services/              # Business services
 │   ├── ExportService.swift
@@ -72,7 +89,7 @@ SFSymbolsBrowser/
 ## Setup
 
 1. Clone the repository
-2. Open `Package.swift` in Xcode or run `swift build`
+2. Open `SFSymbolsBrowser/Package.swift` in Xcode
 3. Xcode will fetch SFSafeSymbols automatically
 4. Build and run on iOS 17+ device or simulator
 

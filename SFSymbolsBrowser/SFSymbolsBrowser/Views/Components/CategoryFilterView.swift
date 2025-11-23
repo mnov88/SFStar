@@ -74,7 +74,7 @@ struct CategoryRow: View {
             HStack {
                 Image(systemName: category.systemImage)
                     .font(.title3)
-                    .foregroundStyle(isSelected ? .accentColor : .secondary)
+                    .foregroundStyle(isSelected ? Color.accentColor : .secondary)
                     .frame(width: 32)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -90,7 +90,7 @@ struct CategoryRow: View {
 
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.accentColor)
+                        .foregroundStyle(Color.accentColor)
                         .fontWeight(.semibold)
                 }
             }

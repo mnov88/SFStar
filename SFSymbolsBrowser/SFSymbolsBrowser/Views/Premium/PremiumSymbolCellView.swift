@@ -206,23 +206,21 @@ struct PremiumCellButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    let symbol = SymbolItem(name: "heart.fill", categories: [.general])
-
-    return VStack(spacing: 20) {
+    VStack(spacing: 20) {
         HStack(spacing: 16) {
-            PremiumSymbolCellView(symbol: symbol, isFavorite: false)
-            PremiumSymbolCellView(symbol: symbol, isFavorite: true)
+            PremiumSymbolCellView(symbol: SymbolItem(symbol: .heartFill, category: .general), isFavorite: false)
+            PremiumSymbolCellView(symbol: SymbolItem(symbol: .heartFill, category: .general), isFavorite: true)
         }
 
         HStack(spacing: 16) {
             SelectablePremiumSymbolCellView(
-                symbol: symbol,
+                symbol: SymbolItem(symbol: .heartFill, category: .general),
                 isFavorite: false,
                 isSelected: false,
                 onSelect: {}
             )
             SelectablePremiumSymbolCellView(
-                symbol: symbol,
+                symbol: SymbolItem(symbol: .heartFill, category: .general),
                 isFavorite: true,
                 isSelected: true,
                 onSelect: {}

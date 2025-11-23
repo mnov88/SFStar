@@ -18,6 +18,13 @@ struct ExportOptionsSheet: View {
 
     private var exportService = ExportService()
 
+    init(symbol: SymbolItem, weight: Font.Weight, color: Color, renderingMode: SymbolRenderingMode) {
+        self.symbol = symbol
+        self.weight = weight
+        self.color = color
+        self.renderingMode = renderingMode
+    }
+
     private var exportCount: Int {
         selectedFormat == .png ? selectedScales.count : 1
     }
@@ -253,6 +260,13 @@ struct PremiumExportOptionsSheet: View {
 
     private var exportService = ExportService()
 
+    init(symbol: SymbolItem, weight: Font.Weight, color: Color, renderingMode: SymbolRenderingMode) {
+        self.symbol = symbol
+        self.weight = weight
+        self.color = color
+        self.renderingMode = renderingMode
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -459,7 +473,7 @@ struct PremiumExportOptionsSheet: View {
 
 #Preview {
     ExportOptionsSheet(
-        symbol: SymbolItem(name: "heart.fill", categories: [.general]),
+        symbol: SymbolItem(symbol: .heartFill, category: .general),
         weight: .regular,
         color: .pink,
         renderingMode: .hierarchical
@@ -469,7 +483,7 @@ struct PremiumExportOptionsSheet: View {
 
 #Preview("Premium") {
     PremiumExportOptionsSheet(
-        symbol: SymbolItem(name: "heart.fill", categories: [.general]),
+        symbol: SymbolItem(symbol: .heartFill, category: .general),
         weight: .regular,
         color: .pink,
         renderingMode: .hierarchical

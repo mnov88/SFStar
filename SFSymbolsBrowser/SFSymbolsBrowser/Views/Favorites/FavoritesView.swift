@@ -137,7 +137,7 @@ struct FavoritesView: View {
                 SymbolCellView(symbol: symbol, isFavorite: true)
 
                 Image(systemSymbol: selectedSymbols.contains(symbol.name) ? .checkmarkCircleFill : .circle)
-                    .foregroundStyle(selectedSymbols.contains(symbol.name) ? .accentColor : .secondary)
+                    .foregroundStyle(selectedSymbols.contains(symbol.name) ? Color.accentColor : .secondary)
                     .background(Circle().fill(.background))
                     .padding(4)
             }
@@ -262,7 +262,7 @@ struct CollectionRow: View {
     var body: some View {
         HStack {
             Image(systemSymbol: .folder)
-                .foregroundStyle(.accentColor)
+                .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(collection.name)

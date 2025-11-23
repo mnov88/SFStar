@@ -381,7 +381,7 @@ struct PremiumCodeGenerationView: View {
 
 #Preview {
     CodeGenerationView(
-        symbol: SymbolItem(name: "heart.fill", categories: [.general]),
+        symbol: SymbolItem(symbol: .heartFill, category: .general),
         weight: .semibold,
         color: .pink,
         renderingMode: .hierarchical
@@ -390,7 +390,7 @@ struct PremiumCodeGenerationView: View {
 
 #Preview("Premium") {
     PremiumCodeGenerationView(
-        symbol: SymbolItem(name: "heart.fill", categories: [.general]),
+        symbol: SymbolItem(symbol: .heartFill, category: .general),
         weight: .semibold,
         color: .pink,
         renderingMode: .hierarchical
