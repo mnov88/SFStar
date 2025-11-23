@@ -22,6 +22,21 @@ struct PremiumiPadSidebarView: View {
             detailContent
         }
         .navigationSplitViewStyle(.balanced)
+        .alert("New Collection", isPresented: $isCreatingCollection) {
+            TextField("Collection name", text: $newCollectionName)
+            Button("Cancel", role: .cancel) {
+                newCollectionName = ""
+            }
+            Button("Create") {
+                if !newCollectionName.isEmpty {
+                    let _ = persistence.createCollection(name: newCollectionName)
+                    newCollectionName = ""
+                    HapticManager.shared.success()
+                }
+            }
+        } message: {
+            Text("Enter a name for your new collection.")
+        }
     }
 
     // MARK: - Sidebar Content
@@ -173,10 +188,8 @@ struct PremiumiPadSidebarView: View {
     @State private var newCollectionName = ""
 
     private func createNewCollection() {
-        // For simplicity, create with default name
-        let name = "New Collection \(persistence.collections.count + 1)"
-        let _ = persistence.createCollection(name: name)
-        HapticManager.shared.success()
+        isCreatingCollection = true
+        HapticManager.shared.lightTap()
     }
 }
 

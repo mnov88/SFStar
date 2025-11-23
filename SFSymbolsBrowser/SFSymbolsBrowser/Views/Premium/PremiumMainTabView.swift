@@ -85,6 +85,8 @@ struct PremiumFavoritesView: View {
     @State private var repository = SymbolRepository()
     @State private var isCreatingCollection = false
     @State private var newCollectionName = ""
+    @State private var selectedSymbols: Set<String> = []
+    @State private var isSelectionMode = false
 
     private var columns: [GridItem] {
         let minSize: CGFloat = horizontalSizeClass == .regular ? 88 : 76
@@ -116,14 +118,7 @@ struct PremiumFavoritesView: View {
             PremiumCollectionDetailView(collection: collection)
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    isCreatingCollection = true
-                    HapticManager.shared.lightTap()
-                } label: {
-                    Image(systemSymbol: .folderBadgePlus)
-                }
-            }
+            toolbarContent
         }
         .alert("New Collection", isPresented: $isCreatingCollection) {
             TextField("Collection name", text: $newCollectionName)
@@ -135,6 +130,72 @@ struct PremiumFavoritesView: View {
                     let _ = persistence.createCollection(name: newCollectionName)
                     newCollectionName = ""
                     HapticManager.shared.success()
+                }
+            }
+        }
+    }
+
+    // MARK: - Toolbar
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        if isSelectionMode {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    withAnimation(DesignSystem.Animation.snappy) {
+                        isSelectionMode = false
+                        selectedSymbols.removeAll()
+                    }
+                    HapticManager.shared.lightTap()
+                }
+            }
+
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    if !persistence.collections.isEmpty {
+                        Menu {
+                            ForEach(persistence.collections) { collection in
+                                Button(collection.name) {
+                                    addSelectedToCollection(collection)
+                                }
+                            }
+                        } label: {
+                            Label("Add to Collection", systemImage: "folder.badge.plus")
+                        }
+                    }
+
+                    Button(role: .destructive) {
+                        removeSelectedFromFavorites()
+                    } label: {
+                        Label("Remove Selected", systemImage: "heart.slash")
+                    }
+                } label: {
+                    Text("\(selectedSymbols.count) selected")
+                        .font(.subheadline.weight(.medium))
+                }
+                .disabled(selectedSymbols.isEmpty)
+            }
+        } else {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    if !favoriteSymbols.isEmpty {
+                        Button {
+                            withAnimation(DesignSystem.Animation.snappy) {
+                                isSelectionMode = true
+                            }
+                            HapticManager.shared.lightTap()
+                        } label: {
+                            Label("Select Multiple", systemImage: "checkmark.circle")
+                        }
+                    }
+
+                    Button {
+                        isCreatingCollection = true
+                        HapticManager.shared.lightTap()
+                    } label: {
+                        Label("New Collection", systemImage: "folder.badge.plus")
+                    }
+                } label: {
+                    Image(systemSymbol: .ellipsisCircle)
                 }
             }
         }
@@ -209,25 +270,84 @@ struct PremiumFavoritesView: View {
     private var favoritesGrid: some View {
         LazyVGrid(columns: columns, spacing: 12) {
             ForEach(favoriteSymbols) { symbol in
-                NavigationLink(value: symbol) {
-                    PremiumSymbolCellView(
-                        symbol: symbol,
-                        isFavorite: true
-                    ) {
-                        withAnimation(DesignSystem.Animation.bouncy) {
-                            persistence.toggleFavorite(symbol)
+                if isSelectionMode {
+                    selectableCell(for: symbol)
+                } else {
+                    NavigationLink(value: symbol) {
+                        PremiumSymbolCellView(
+                            symbol: symbol,
+                            isFavorite: true
+                        ) {
+                            withAnimation(DesignSystem.Animation.bouncy) {
+                                persistence.toggleFavorite(symbol)
+                            }
                         }
                     }
+                    .buttonStyle(PremiumCellButtonStyle())
                 }
-                .buttonStyle(PremiumCellButtonStyle())
             }
         }
         .padding(.vertical, 8)
     }
 
+    // MARK: - Selectable Cell
+    private func selectableCell(for symbol: SymbolItem) -> some View {
+        Button {
+            withAnimation(DesignSystem.Animation.snappy) {
+                if selectedSymbols.contains(symbol.name) {
+                    selectedSymbols.remove(symbol.name)
+                } else {
+                    selectedSymbols.insert(symbol.name)
+                }
+            }
+            HapticManager.shared.selection()
+        } label: {
+            ZStack(alignment: .topLeading) {
+                PremiumSymbolCellView(
+                    symbol: symbol,
+                    isFavorite: true
+                )
+
+                Image(systemSymbol: selectedSymbols.contains(symbol.name) ? .checkmarkCircleFill : .circle)
+                    .foregroundStyle(selectedSymbols.contains(symbol.name) ? .accentColor : .secondary)
+                    .background(Circle().fill(.background))
+                    .font(.title3)
+                    .padding(6)
+            }
+        }
+        .buttonStyle(PremiumCellButtonStyle())
+    }
+
+    // MARK: - Actions
     private func deleteCollections(at offsets: IndexSet) {
         for index in offsets {
             persistence.deleteCollection(persistence.collections[index])
+        }
+        HapticManager.shared.warning()
+    }
+
+    private func addSelectedToCollection(_ collection: SymbolCollection) {
+        for name in selectedSymbols {
+            if let symbol = repository.symbol(named: name) {
+                persistence.addToCollection(symbol, collection: collection)
+            }
+        }
+        withAnimation(DesignSystem.Animation.snappy) {
+            isSelectionMode = false
+            selectedSymbols.removeAll()
+        }
+        HapticManager.shared.success()
+    }
+
+    private func removeSelectedFromFavorites() {
+        for name in selectedSymbols {
+            if let symbol = repository.symbol(named: name) {
+                persistence.toggleFavorite(symbol)
+            }
+        }
+        withAnimation(DesignSystem.Animation.snappy) {
+            isSelectionMode = false
+            selectedSymbols.removeAll()
         }
         HapticManager.shared.warning()
     }
@@ -440,6 +560,17 @@ struct PremiumSettingsView: View {
                     Text("SVG").tag(ExportFormat.svg)
                 }
 
+                NavigationLink {
+                    PremiumExportScalesSettingsView()
+                } label: {
+                    HStack {
+                        Text("Default Scales")
+                        Spacer()
+                        Text(scalesDescription)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 Picker("Default Weight", selection: weightBinding) {
                     ForEach(Font.Weight.allWeights, id: \.self) { weight in
                         Text(weight.displayName).tag(weight)
@@ -447,10 +578,38 @@ struct PremiumSettingsView: View {
                 }
             } header: {
                 Text("Export Defaults")
+            } footer: {
+                Text("These settings are used as defaults when exporting symbols.")
+            }
+
+            // Compatibility Section
+            Section {
+                Picker("Target iOS", selection: targetIOSBinding) {
+                    Text("iOS 13.0").tag(13.0)
+                    Text("iOS 14.0").tag(14.0)
+                    Text("iOS 15.0").tag(15.0)
+                    Text("iOS 16.0").tag(16.0)
+                    Text("iOS 17.0").tag(17.0)
+                    Text("iOS 18.0").tag(18.0)
+                }
+
+                Toggle("Show Compatibility Badge", isOn: showBadgeBinding)
+            } header: {
+                Text("Compatibility")
+            } footer: {
+                Text("Filter symbols and show badges based on iOS version compatibility.")
             }
 
             // Display Section
             Section {
+                Picker("Grid Columns", selection: columnsBinding) {
+                    Text("Auto").tag(0)
+                    Text("3").tag(3)
+                    Text("4").tag(4)
+                    Text("5").tag(5)
+                    Text("6").tag(6)
+                }
+
                 Picker("Symbol Size", selection: sizeBinding) {
                     ForEach(SymbolSize.allCases) { size in
                         Text(size.rawValue).tag(size)
@@ -467,6 +626,12 @@ struct PremiumSettingsView: View {
                 } label: {
                     Label("Reset All Settings", systemSymbol: .arrowCounterclockwise)
                 }
+
+                NavigationLink {
+                    PremiumDataManagementView()
+                } label: {
+                    Label("Manage Data", systemSymbol: .externaldrive)
+                }
             } header: {
                 Text("Data")
             }
@@ -476,6 +641,10 @@ struct PremiumSettingsView: View {
                 LabeledContent("App Version", value: "1.0.0")
                 LabeledContent("SF Symbols", value: "6.0+")
                 LabeledContent("Build", value: "Premium")
+
+                Link(destination: URL(string: "https://github.com")!) {
+                    Label("Send Feedback", systemSymbol: .envelope)
+                }
 
                 Link(destination: URL(string: "https://developer.apple.com/sf-symbols/")!) {
                     Label("SF Symbols Documentation", systemSymbol: .questionmarkCircle)
@@ -515,11 +684,143 @@ struct PremiumSettingsView: View {
         )
     }
 
+    private var targetIOSBinding: Binding<Double> {
+        Binding(
+            get: { persistence.settings.targetIOSVersion },
+            set: { persistence.settings.targetIOSVersion = $0 }
+        )
+    }
+
+    private var showBadgeBinding: Binding<Bool> {
+        Binding(
+            get: { persistence.settings.showCompatibilityBadge },
+            set: { persistence.settings.showCompatibilityBadge = $0 }
+        )
+    }
+
+    private var columnsBinding: Binding<Int> {
+        Binding(
+            get: { persistence.settings.gridColumns },
+            set: { persistence.settings.gridColumns = $0 }
+        )
+    }
+
     private var sizeBinding: Binding<SymbolSize> {
         Binding(
             get: { persistence.settings.symbolSize },
             set: { persistence.settings.symbolSize = $0 }
         )
+    }
+
+    private var scalesDescription: String {
+        let scales = persistence.settings.defaultScales.sorted()
+        if scales.isEmpty {
+            return "None"
+        }
+        return scales.map { $0.label }.joined(separator: ", ")
+    }
+}
+
+// MARK: - Premium Export Scales Settings
+struct PremiumExportScalesSettingsView: View {
+    @Environment(PersistenceService.self) private var persistence
+
+    var body: some View {
+        Form {
+            Section {
+                ForEach(ExportScale.allCases) { scale in
+                    Toggle(scale.label, isOn: scaleBinding(for: scale))
+                }
+            } footer: {
+                Text("Select which scales to include when exporting PNG files.")
+            }
+        }
+        .navigationTitle("Export Scales")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func scaleBinding(for scale: ExportScale) -> Binding<Bool> {
+        Binding(
+            get: { persistence.settings.defaultScales.contains(scale) },
+            set: { isOn in
+                if isOn {
+                    persistence.settings.defaultScales.insert(scale)
+                } else {
+                    persistence.settings.defaultScales.remove(scale)
+                }
+                HapticManager.shared.selection()
+            }
+        )
+    }
+}
+
+// MARK: - Premium Data Management View
+struct PremiumDataManagementView: View {
+    @Environment(PersistenceService.self) private var persistence
+    @State private var showingClearFavorites = false
+    @State private var showingClearCollections = false
+    @State private var showingClearAll = false
+
+    var body: some View {
+        Form {
+            Section {
+                LabeledContent("Favorites", value: "\(persistence.favoriteSymbolNames.count)")
+                LabeledContent("Collections", value: "\(persistence.collections.count)")
+
+                let totalInCollections = persistence.collections.reduce(0) { $0 + $1.symbolNames.count }
+                LabeledContent("Symbols in Collections", value: "\(totalInCollections)")
+            } header: {
+                Text("Statistics")
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    showingClearFavorites = true
+                } label: {
+                    Label("Clear All Favorites", systemSymbol: .starSlash)
+                }
+                .disabled(persistence.favoriteSymbolNames.isEmpty)
+
+                Button(role: .destructive) {
+                    showingClearCollections = true
+                } label: {
+                    Label("Delete All Collections", systemSymbol: .folderBadgeMinus)
+                }
+                .disabled(persistence.collections.isEmpty)
+
+                Button(role: .destructive) {
+                    showingClearAll = true
+                } label: {
+                    Label("Clear All Data", systemSymbol: .trash)
+                }
+            } header: {
+                Text("Clear Data")
+            } footer: {
+                Text("These actions cannot be undone.")
+            }
+        }
+        .navigationTitle("Manage Data")
+        .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog("Clear Favorites?", isPresented: $showingClearFavorites) {
+            Button("Clear All Favorites", role: .destructive) {
+                persistence.favoriteSymbolNames.removeAll()
+                HapticManager.shared.warning()
+            }
+        }
+        .confirmationDialog("Delete Collections?", isPresented: $showingClearCollections) {
+            Button("Delete All Collections", role: .destructive) {
+                persistence.collections.removeAll()
+                HapticManager.shared.warning()
+            }
+        }
+        .confirmationDialog("Clear All Data?", isPresented: $showingClearAll) {
+            Button("Clear Everything", role: .destructive) {
+                persistence.favoriteSymbolNames.removeAll()
+                persistence.collections.removeAll()
+                persistence.settings = .default
+                HapticManager.shared.warning()
+            }
+        }
     }
 }
 
