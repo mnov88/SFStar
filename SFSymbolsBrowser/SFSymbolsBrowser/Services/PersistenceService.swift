@@ -9,7 +9,11 @@ final class PersistenceService: @unchecked Sendable {
         static let favorites = "favorites"
         static let collections = "collections"
         static let settings = "settings"
+        static let searchHistory = "searchHistory"
     }
+
+    // MARK: - Constants
+    private static let maxSearchHistoryCount = 10
 
     // MARK: - Properties
     private let defaults = UserDefaults.standard
@@ -34,11 +38,18 @@ final class PersistenceService: @unchecked Sendable {
         }
     }
 
+    var searchHistory: [String] {
+        didSet {
+            saveSearchHistory()
+        }
+    }
+
     // MARK: - Initialization
     init() {
         favoriteSymbolNames = Self.loadFavorites(from: UserDefaults.standard)
         collections = Self.loadCollections(from: UserDefaults.standard, decoder: JSONDecoder())
         settings = Self.loadSettings(from: UserDefaults.standard, decoder: JSONDecoder())
+        searchHistory = Self.loadSearchHistory(from: UserDefaults.standard)
     }
 
     // MARK: - Favorites
@@ -128,6 +139,39 @@ final class PersistenceService: @unchecked Sendable {
             return .default
         }
         return settings
+    }
+
+    // MARK: - Search History
+    func addToSearchHistory(_ query: String) {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed.count >= 2 else { return }
+
+        // Remove if already exists (to move to front)
+        searchHistory.removeAll { $0.lowercased() == trimmed.lowercased() }
+
+        // Add to front
+        searchHistory.insert(trimmed, at: 0)
+
+        // Trim to max count
+        if searchHistory.count > Self.maxSearchHistoryCount {
+            searchHistory = Array(searchHistory.prefix(Self.maxSearchHistoryCount))
+        }
+    }
+
+    func removeFromSearchHistory(_ query: String) {
+        searchHistory.removeAll { $0 == query }
+    }
+
+    func clearSearchHistory() {
+        searchHistory = []
+    }
+
+    private func saveSearchHistory() {
+        defaults.set(searchHistory, forKey: StorageKey.searchHistory)
+    }
+
+    private static func loadSearchHistory(from defaults: UserDefaults) -> [String] {
+        defaults.array(forKey: StorageKey.searchHistory) as? [String] ?? []
     }
 }
 

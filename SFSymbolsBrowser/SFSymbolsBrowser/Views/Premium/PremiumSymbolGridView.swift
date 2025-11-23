@@ -36,6 +36,18 @@ struct PremiumSymbolGridView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Search \(viewModel.filteredSymbols.count) symbols"
         )
+        .onSubmit(of: .search) {
+            // Save search to history when user submits
+            persistence.addToSearchHistory(viewModel.searchText)
+        }
+        .searchSuggestions {
+            if viewModel.searchText.isEmpty && !persistence.searchHistory.isEmpty {
+                ForEach(persistence.searchHistory, id: \.self) { query in
+                    Label(query, systemSymbol: .clock)
+                        .searchCompletion(query)
+                }
+            }
+        }
         .toolbar {
             toolbarContent
         }
@@ -124,6 +136,13 @@ struct PremiumSymbolGridView: View {
             HapticManager.shared.mediumTap()
         } label: {
             Label("Copy Name", systemImage: "doc.on.doc")
+        }
+
+        Button {
+            ShareService.shareSymbolName(symbol.name)
+            HapticManager.shared.lightTap()
+        } label: {
+            Label("Share", systemImage: "square.and.arrow.up")
         }
 
         if !persistence.collections.isEmpty {

@@ -340,10 +340,26 @@ struct PremiumSymbolDetailView: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
-            Button {
-                showingExportSheet = true
+            Menu {
+                Button {
+                    showingExportSheet = true
+                } label: {
+                    Label("Export", systemSymbol: .squareAndArrowDown)
+                }
+
+                Button {
+                    ShareService.shareSymbolImage(
+                        name: symbol.name,
+                        weight: viewModel.selectedWeight,
+                        color: viewModel.selectedColor,
+                        renderingMode: viewModel.selectedRenderingMode
+                    )
+                    HapticManager.shared.lightTap()
+                } label: {
+                    Label("Share", systemSymbol: .squareAndArrowUp)
+                }
             } label: {
-                Image(systemSymbol: .squareAndArrowUp)
+                Image(systemSymbol: .ellipsisCircle)
             }
         }
     }

@@ -240,6 +240,19 @@ struct SymbolDetailView: View {
 
         ToolbarItem(placement: .secondaryAction) {
             Button {
+                ShareService.shareSymbolImage(
+                    name: symbol.name,
+                    weight: viewModel.selectedWeight,
+                    color: viewModel.selectedColor,
+                    renderingMode: viewModel.selectedRenderingMode
+                )
+            } label: {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+        }
+
+        ToolbarItem(placement: .secondaryAction) {
+            Button {
                 viewModel.copyName()
             } label: {
                 Label("Copy Name", systemImage: "doc.on.doc")

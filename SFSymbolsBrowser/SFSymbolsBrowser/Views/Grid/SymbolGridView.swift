@@ -38,6 +38,17 @@ struct SymbolGridView: View {
         .navigationTitle(viewModel.displayTitle)
         .navigationBarTitleDisplayMode(horizontalSizeClass == .regular ? .inline : .large)
         .searchable(text: $viewModel.searchText, prompt: "Search symbols")
+        .onSubmit(of: .search) {
+            persistence.addToSearchHistory(viewModel.searchText)
+        }
+        .searchSuggestions {
+            if viewModel.searchText.isEmpty && !persistence.searchHistory.isEmpty {
+                ForEach(persistence.searchHistory, id: \.self) { query in
+                    Label(query, systemImage: "clock")
+                        .searchCompletion(query)
+                }
+            }
+        }
         .navigationDestination(for: SymbolItem.self) { symbol in
             SymbolDetailView(symbol: symbol)
         }
@@ -79,6 +90,12 @@ struct SymbolGridView: View {
             generator.notificationOccurred(.success)
         } label: {
             Label("Copy Name", systemImage: "doc.on.doc")
+        }
+
+        Button {
+            ShareService.shareSymbolName(symbol.name)
+        } label: {
+            Label("Share", systemImage: "square.and.arrow.up")
         }
 
         Button {

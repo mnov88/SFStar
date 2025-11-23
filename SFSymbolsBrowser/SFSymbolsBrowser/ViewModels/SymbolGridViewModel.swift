@@ -7,6 +7,7 @@ final class SymbolGridViewModel {
     var searchText: String = ""
     var selectedCategory: SymbolCategory? = nil
     var isShowingCategoryFilter: Bool = false
+    var isSearchFocused: Bool = false
 
     private let repository: SymbolRepository
 
@@ -36,6 +37,19 @@ final class SymbolGridViewModel {
         } else {
             return "\(symbolCount) of \(totalSymbolCount)"
         }
+    }
+
+    var categoryCounts: [SymbolCategory: Int] {
+        var counts: [SymbolCategory: Int] = [:]
+        for category in SymbolCategory.allCases {
+            counts[category] = repository.count(for: category)
+        }
+        return counts
+    }
+
+    /// Whether to show search suggestions (when focused and search is empty)
+    var shouldShowSearchHistory: Bool {
+        isSearchFocused && searchText.isEmpty
     }
 
     // MARK: - Initialization
@@ -68,5 +82,10 @@ final class SymbolGridViewModel {
 
     func categoryCount(for category: SymbolCategory) -> Int {
         repository.count(for: category)
+    }
+
+    func applySearchFromHistory(_ query: String) {
+        searchText = query
+        isSearchFocused = false
     }
 }
