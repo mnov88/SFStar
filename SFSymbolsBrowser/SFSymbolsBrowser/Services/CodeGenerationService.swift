@@ -99,30 +99,62 @@ struct CodeGenerationService {
 
         case .variableColor:
             var effect = ".variableColor"
+            // Inactive layer style (per Apple docs)
+            switch config.variableColorInactiveStyle {
+            case .hideInactiveLayers:
+                effect += ".hideInactiveLayers"
+            case .dimInactiveLayers:
+                effect += ".dimInactiveLayers"
+            case .normal:
+                break
+            }
+            // Fill style
             effect += config.variableColorStyle == .cumulative ? ".cumulative" : ".iterative"
+            // Reversing
             if config.reversing {
                 effect += ".reversing"
             }
             effectCode = effect
 
         case .breathe:
-            effectCode = ".breathe"
+            var effect = ".breathe"
+            // Breathe style (iOS 18+)
+            if config.breatheStyle == .pulse {
+                effect += ".pulse"
+            } else {
+                effect += ".plain"
+            }
+            // Scope
+            let scope = config.scope == .byLayer ? ".byLayer" : ".wholeSymbol"
+            effect += scope
+            effectCode = effect
 
         case .wiggle:
-            let direction: String
+            var effect = ".wiggle"
+            // Direction (per Apple docs: up, down, left, right, forward, backward, clockwise, counterClockwise)
             switch config.direction {
-            case .up: direction = ".up"
-            case .down: direction = ".down"
-            case .left: direction = ".left"
-            case .right: direction = ".right"
-            case .clockwise: direction = ".clockwise"
-            case .counterClockwise: direction = ".counterClockwise"
+            case .up: effect += ".up"
+            case .down: effect += ".down"
+            case .left: effect += ".left"
+            case .right: effect += ".right"
+            case .forward: effect += ".forward"
+            case .backward: effect += ".backward"
+            case .clockwise: effect += ".clockwise"
+            case .counterClockwise: effect += ".counterClockwise"
             }
-            effectCode = ".wiggle\(direction)"
+            // Scope
+            let scope = config.scope == .byLayer ? ".byLayer" : ".wholeSymbol"
+            effect += scope
+            effectCode = effect
 
         case .rotate:
+            var effect = ".rotate"
             let direction = config.direction == .counterClockwise ? ".counterClockwise" : ".clockwise"
-            effectCode = ".rotate\(direction)"
+            effect += direction
+            // Scope
+            let scope = config.scope == .byLayer ? ".byLayer" : ".wholeSymbol"
+            effect += scope
+            effectCode = effect
 
         case .scale:
             let direction = config.direction == .down ? ".down" : ".up"
@@ -130,8 +162,13 @@ struct CodeGenerationService {
             effectCode = ".scale\(direction)\(scope)"
         }
 
+        // Determine if using value-based trigger or indefinite
         if config.repeatOption == .continuous {
-            return "    .symbolEffect(\(effectCode)\(optionsCode))"
+            if optionsCode.isEmpty {
+                return "    .symbolEffect(\(effectCode))"
+            } else {
+                return "    .symbolEffect(\(effectCode)\(optionsCode))"
+            }
         } else {
             return "    .symbolEffect(\(effectCode)\(optionsCode), value: trigger)"
         }
@@ -141,17 +178,16 @@ struct CodeGenerationService {
     private func generateEffectOptionsCode(_ config: SymbolEffectConfiguration) -> String {
         var options: [String] = []
 
-        // Speed
+        // Speed (only if not normal)
         if config.speed != .normal {
             options.append(".speed(\(config.speed.multiplier))")
         }
 
-        // Repeat
+        // Repeat count (only for discrete behavior, not continuous)
         if let count = config.repeatOption.count {
             options.append(".repeat(\(count))")
-        } else {
-            options.append(".repeating")
         }
+        // Note: For continuous (indefinite) behavior, no .repeating option needed per Apple docs
 
         if options.isEmpty {
             return ""
@@ -231,49 +267,78 @@ struct CodeGenerationService {
             return ""
 
         case .bounce:
-            let direction = config.direction == .down ? ".effectWithDown" : ""
-            let scope = config.scope == .byLayer ? ".effectWithByLayer" : ".effectWithWholeSymbol"
-            effectCode = "[[[NSSymbolBounceEffect effect]\(direction)]\(scope)]"
+            let direction = config.direction == .down ? " effectWithDown]" : "]"
+            let scope = config.scope == .byLayer ? " effectWithByLayer]" : " effectWithWholeSymbol]"
+            effectCode = "[[[NSSymbolBounceEffect effect\(direction)\(scope)"
 
         case .pulse:
-            let scope = config.scope == .byLayer ? ".effectWithByLayer" : ".effectWithWholeSymbol"
-            effectCode = "[[NSSymbolPulseEffect effect]\(scope)]"
+            let scope = config.scope == .byLayer ? " effectWithByLayer]" : " effectWithWholeSymbol]"
+            effectCode = "[[NSSymbolPulseEffect effect]\(scope)"
 
         case .variableColor:
             var effect = "[NSSymbolVariableColorEffect effect]"
+            // Inactive layer style
+            switch config.variableColorInactiveStyle {
+            case .hideInactiveLayers:
+                effect = "[\(effect) effectWithHideInactiveLayers]"
+            case .dimInactiveLayers:
+                effect = "[\(effect) effectWithDimInactiveLayers]"
+            case .normal:
+                break
+            }
+            // Fill style
             if config.variableColorStyle == .cumulative {
                 effect = "[\(effect) effectWithCumulative]"
             } else {
                 effect = "[\(effect) effectWithIterative]"
             }
+            // Reversing
             if config.reversing {
                 effect = "[\(effect) effectWithReversing]"
             }
             effectCode = effect
 
         case .breathe:
-            effectCode = "[NSSymbolBreatheEffect effect]"
+            var effect = "[NSSymbolBreatheEffect effect]"
+            // Style
+            if config.breatheStyle == .pulse {
+                effect = "[\(effect) effectWithPulse]"
+            } else {
+                effect = "[\(effect) effectWithPlain]"
+            }
+            // Scope
+            let scope = config.scope == .byLayer ? " effectWithByLayer]" : " effectWithWholeSymbol]"
+            effectCode = "[\(effect)\(scope)"
 
         case .wiggle:
-            let direction: String
+            var effect = "[NSSymbolWiggleEffect effect]"
+            // Direction
             switch config.direction {
-            case .up: direction = ".effectWithUp"
-            case .down: direction = ".effectWithDown"
-            case .left: direction = ".effectWithLeft"
-            case .right: direction = ".effectWithRight"
-            case .clockwise: direction = ".effectWithClockwise"
-            case .counterClockwise: direction = ".effectWithCounterClockwise"
+            case .up: effect = "[\(effect) effectWithUp]"
+            case .down: effect = "[\(effect) effectWithDown]"
+            case .left: effect = "[\(effect) effectWithLeft]"
+            case .right: effect = "[\(effect) effectWithRight]"
+            case .forward: effect = "[\(effect) effectWithForward]"
+            case .backward: effect = "[\(effect) effectWithBackward]"
+            case .clockwise: effect = "[\(effect) effectWithClockwise]"
+            case .counterClockwise: effect = "[\(effect) effectWithCounterClockwise]"
             }
-            effectCode = "[[NSSymbolWiggleEffect effect]\(direction)]"
+            // Scope
+            let scope = config.scope == .byLayer ? " effectWithByLayer]" : " effectWithWholeSymbol]"
+            effectCode = "[\(effect)\(scope)"
 
         case .rotate:
-            let direction = config.direction == .counterClockwise ? ".effectWithCounterClockwise" : ".effectWithClockwise"
-            effectCode = "[[NSSymbolRotateEffect effect]\(direction)]"
+            var effect = "[NSSymbolRotateEffect effect]"
+            let direction = config.direction == .counterClockwise ? " effectWithCounterClockwise]" : " effectWithClockwise]"
+            effect = "[\(effect)\(direction)"
+            // Scope
+            let scope = config.scope == .byLayer ? " effectWithByLayer]" : " effectWithWholeSymbol]"
+            effectCode = "[\(effect)\(scope)"
 
         case .scale:
-            let direction = config.direction == .down ? ".effectWithDown" : ".effectWithUp"
-            let scope = config.scope == .byLayer ? ".effectWithByLayer" : ".effectWithWholeSymbol"
-            effectCode = "[[[NSSymbolScaleEffect effect]\(direction)]\(scope)]"
+            let direction = config.direction == .down ? " effectWithDown]" : " effectWithUp]"
+            let scope = config.scope == .byLayer ? " effectWithByLayer]" : " effectWithWholeSymbol]"
+            effectCode = "[[[NSSymbolScaleEffect effect]\(direction)\(scope)"
         }
 
         lines.append("imageView.addSymbolEffect(\(effectCode))")

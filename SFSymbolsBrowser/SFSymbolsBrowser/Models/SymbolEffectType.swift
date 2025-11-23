@@ -107,6 +107,8 @@ enum SymbolEffectDirection: String, CaseIterable, Identifiable {
     case down = "Down"
     case left = "Left"
     case right = "Right"
+    case forward = "Forward"
+    case backward = "Backward"
     case clockwise = "Clockwise"
     case counterClockwise = "Counter-Clockwise"
 
@@ -118,6 +120,8 @@ enum SymbolEffectDirection: String, CaseIterable, Identifiable {
         case .down: return "arrow.down"
         case .left: return "arrow.left"
         case .right: return "arrow.right"
+        case .forward: return "arrow.right.circle"
+        case .backward: return "arrow.left.circle"
         case .clockwise: return "arrow.clockwise"
         case .counterClockwise: return "arrow.counterclockwise"
         }
@@ -128,9 +132,9 @@ enum SymbolEffectDirection: String, CaseIterable, Identifiable {
         [.up, .down]
     }
 
-    /// Directions available for wiggle effect
+    /// Directions available for wiggle effect (per Apple docs)
     static var wiggleDirections: [SymbolEffectDirection] {
-        [.up, .down, .left, .right, .clockwise, .counterClockwise]
+        [.up, .down, .left, .right, .forward, .backward, .clockwise, .counterClockwise]
     }
 
     /// Directions available for rotate effect
@@ -150,6 +154,30 @@ enum VariableColorStyle: String, CaseIterable, Identifiable {
         switch self {
         case .iterative: return "One layer at a time"
         case .cumulative: return "Layers accumulate"
+        }
+    }
+}
+
+/// How inactive layers are displayed during variable color animation
+enum VariableColorInactiveStyle: String, CaseIterable, Identifiable {
+    case normal = "Normal"
+    case dimInactiveLayers = "Dim Inactive"
+    case hideInactiveLayers = "Hide Inactive"
+
+    var id: String { rawValue }
+}
+
+/// Breathe effect style (iOS 18+)
+enum BreatheStyle: String, CaseIterable, Identifiable {
+    case plain = "Plain"
+    case pulse = "Pulse"
+
+    var id: String { rawValue }
+
+    var description: String {
+        switch self {
+        case .plain: return "Smooth breathing"
+        case .pulse: return "Pulsating breath"
         }
     }
 }
@@ -198,7 +226,9 @@ struct SymbolEffectConfiguration: Equatable {
     var scope: SymbolEffectScope = .wholeSymbol
     var direction: SymbolEffectDirection = .up
     var variableColorStyle: VariableColorStyle = .iterative
+    var variableColorInactiveStyle: VariableColorInactiveStyle = .normal
     var reversing: Bool = false
+    var breatheStyle: BreatheStyle = .plain
     var speed: SymbolEffectSpeed = .normal
     var repeatOption: SymbolEffectRepeat = .continuous
 
@@ -231,13 +261,23 @@ struct SymbolEffectConfiguration: Equatable {
         effectType == .variableColor
     }
 
-    /// Whether this effect supports scope selection
+    /// Whether this effect supports scope selection (per Apple docs)
     var supportsScope: Bool {
         switch effectType {
-        case .bounce, .pulse, .scale:
+        case .bounce, .pulse, .scale, .breathe, .wiggle, .rotate:
             return true
         default:
             return false
         }
+    }
+
+    /// Whether this effect supports inactive layer styling
+    var supportsInactiveLayerStyle: Bool {
+        effectType == .variableColor
+    }
+
+    /// Whether this effect supports breathe style selection
+    var supportsBreatheStyle: Bool {
+        effectType == .breathe
     }
 }

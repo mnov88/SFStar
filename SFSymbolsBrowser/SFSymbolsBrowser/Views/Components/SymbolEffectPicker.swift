@@ -97,6 +97,11 @@ struct SymbolEffectPicker: View {
                 variableColorOptions
             }
 
+            // Breathe style options (iOS 18+)
+            if configuration.supportsBreatheStyle {
+                breatheStylePicker
+            }
+
             // Speed picker
             speedPicker
 
@@ -163,36 +168,86 @@ struct SymbolEffectPicker: View {
     // MARK: - Variable Color Options
 
     private var variableColorOptions: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            // Fill Style
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+                Text("Fill Style")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+
+                HStack(spacing: DesignSystem.Spacing.xs) {
+                    ForEach(VariableColorStyle.allCases) { style in
+                        OptionChip(
+                            title: style.rawValue,
+                            isSelected: configuration.variableColorStyle == style
+                        ) {
+                            withAnimation(DesignSystem.Animation.snappy) {
+                                configuration.variableColorStyle = style
+                            }
+                            HapticManager.shared.selection()
+                            triggerEffect()
+                        }
+                    }
+
+                    // Reversing toggle
+                    OptionChip(
+                        title: "Reversing",
+                        iconName: "arrow.left.arrow.right",
+                        isSelected: configuration.reversing
+                    ) {
+                        withAnimation(DesignSystem.Animation.snappy) {
+                            configuration.reversing.toggle()
+                        }
+                        HapticManager.shared.selection()
+                        triggerEffect()
+                    }
+                }
+            }
+
+            // Inactive Layers (per Apple docs)
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+                Text("Inactive Layers")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+
+                HStack(spacing: DesignSystem.Spacing.xs) {
+                    ForEach(VariableColorInactiveStyle.allCases) { style in
+                        OptionChip(
+                            title: style.rawValue,
+                            isSelected: configuration.variableColorInactiveStyle == style
+                        ) {
+                            withAnimation(DesignSystem.Animation.snappy) {
+                                configuration.variableColorInactiveStyle = style
+                            }
+                            HapticManager.shared.selection()
+                            triggerEffect()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Breathe Style Picker
+
+    private var breatheStylePicker: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
             Text("Style")
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.secondary)
 
             HStack(spacing: DesignSystem.Spacing.xs) {
-                ForEach(VariableColorStyle.allCases) { style in
+                ForEach(BreatheStyle.allCases) { style in
                     OptionChip(
                         title: style.rawValue,
-                        isSelected: configuration.variableColorStyle == style
+                        isSelected: configuration.breatheStyle == style
                     ) {
                         withAnimation(DesignSystem.Animation.snappy) {
-                            configuration.variableColorStyle = style
+                            configuration.breatheStyle = style
                         }
                         HapticManager.shared.selection()
                         triggerEffect()
                     }
-                }
-
-                // Reversing toggle
-                OptionChip(
-                    title: "Reversing",
-                    iconName: "arrow.left.arrow.right",
-                    isSelected: configuration.reversing
-                ) {
-                    withAnimation(DesignSystem.Animation.snappy) {
-                        configuration.reversing.toggle()
-                    }
-                    HapticManager.shared.selection()
-                    triggerEffect()
                 }
             }
         }
@@ -457,12 +512,24 @@ struct SymbolEffectPreview: View {
     private var variableColorEffect: some View {
         var effect: VariableColorSymbolEffect = .variableColor
 
+        // Apply inactive layer style (per Apple docs)
+        switch configuration.variableColorInactiveStyle {
+        case .hideInactiveLayers:
+            effect = effect.hideInactiveLayers
+        case .dimInactiveLayers:
+            effect = effect.dimInactiveLayers
+        case .normal:
+            break
+        }
+
+        // Apply fill style
         if configuration.variableColorStyle == .cumulative {
             effect = effect.cumulative
         } else {
             effect = effect.iterative
         }
 
+        // Apply reversing
         if configuration.reversing {
             effect = effect.reversing
         }
@@ -507,12 +574,31 @@ struct SymbolEffectPreview: View {
     @ViewBuilder
     private var breatheEffect: some View {
         if #available(iOS 18.0, *) {
-            Image(systemName: symbolName)
-                .font(.system(size: 48))
-                .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
-                .foregroundStyle(color)
-                .symbolEffect(.breathe, options: effectOptions)
+            // Build effect with style
+            let effect: BreatheSymbolEffect = configuration.breatheStyle == .pulse
+                ? .breathe.pulse
+                : .breathe.plain
+
+            // Apply scope
+            let scopedEffect = configuration.scope == .byLayer
+                ? effect.byLayer
+                : effect.wholeSymbol
+
+            if configuration.repeatOption == .continuous {
+                Image(systemName: symbolName)
+                    .font(.system(size: 48))
+                    .fontWeight(weight)
+                    .symbolRenderingMode(renderingMode)
+                    .foregroundStyle(color)
+                    .symbolEffect(scopedEffect, options: effectOptions)
+            } else {
+                Image(systemName: symbolName)
+                    .font(.system(size: 48))
+                    .fontWeight(weight)
+                    .symbolRenderingMode(renderingMode)
+                    .foregroundStyle(color)
+                    .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
+            }
         } else {
             baseSymbol
         }
@@ -528,10 +614,17 @@ struct SymbolEffectPreview: View {
                 case .down: return .wiggle.down
                 case .left: return .wiggle.left
                 case .right: return .wiggle.right
+                case .forward: return .wiggle.forward
+                case .backward: return .wiggle.backward
                 case .clockwise: return .wiggle.clockwise
                 case .counterClockwise: return .wiggle.counterClockwise
                 }
             }()
+
+            // Apply scope
+            let scopedEffect = configuration.scope == .byLayer
+                ? effect.byLayer
+                : effect.wholeSymbol
 
             if configuration.repeatOption == .continuous {
                 Image(systemName: symbolName)
@@ -539,14 +632,14 @@ struct SymbolEffectPreview: View {
                     .fontWeight(weight)
                     .symbolRenderingMode(renderingMode)
                     .foregroundStyle(color)
-                    .symbolEffect(effect, options: effectOptions)
+                    .symbolEffect(scopedEffect, options: effectOptions)
             } else {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
                     .symbolRenderingMode(renderingMode)
                     .foregroundStyle(color)
-                    .symbolEffect(effect, options: effectOptions, value: trigger)
+                    .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
             }
         } else {
             baseSymbol
@@ -561,20 +654,25 @@ struct SymbolEffectPreview: View {
                 ? .rotate.counterClockwise
                 : .rotate.clockwise
 
+            // Apply scope
+            let scopedEffect = configuration.scope == .byLayer
+                ? effect.byLayer
+                : effect.wholeSymbol
+
             if configuration.repeatOption == .continuous {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
                     .symbolRenderingMode(renderingMode)
                     .foregroundStyle(color)
-                    .symbolEffect(effect, options: effectOptions)
+                    .symbolEffect(scopedEffect, options: effectOptions)
             } else {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
                     .symbolRenderingMode(renderingMode)
                     .foregroundStyle(color)
-                    .symbolEffect(effect, options: effectOptions, value: trigger)
+                    .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
             }
         } else {
             baseSymbol
