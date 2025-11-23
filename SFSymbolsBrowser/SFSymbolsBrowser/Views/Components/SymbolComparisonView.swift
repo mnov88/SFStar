@@ -363,7 +363,7 @@ struct SymbolSearchSheet: View {
             searchResults = []
             return
         }
-        searchResults = symbolRepository.search(query: query).prefix(50).map { $0 }
+        searchResults = Array(symbolRepository.symbols(matching: query, category: nil).prefix(50))
     }
 
     private func addSymbol(_ symbol: SymbolItem) {
@@ -441,30 +441,11 @@ struct SymbolWeightVariantsRow: View {
     }
 }
 
-// MARK: - Font.Weight Extension
-
-extension Font.Weight {
-    var shortName: String {
-        switch self {
-        case .ultraLight: return "UL"
-        case .thin: return "Th"
-        case .light: return "Lt"
-        case .regular: return "Rg"
-        case .medium: return "Md"
-        case .semibold: return "Sb"
-        case .bold: return "Bd"
-        case .heavy: return "Hv"
-        case .black: return "Bk"
-        default: return "Rg"
-        }
-    }
-}
-
 // MARK: - Preview
 
 #Preview {
     SymbolComparisonView(
-        primarySymbol: SymbolItem(symbol: .heartFill, category: .general)
+        primarySymbol: SymbolItem(symbol: .heartFill, category: .health)
     )
 }
 

@@ -249,7 +249,7 @@ extension SymbolRepository {
             if let symbol = symbol(named: symbolName) {
                 // Apply category filter if needed
                 if let category = category {
-                    if symbol.categories.contains(category) {
+                    if symbol.category == category || category == .all {
                         results.insert(symbol)
                     }
                 } else {
