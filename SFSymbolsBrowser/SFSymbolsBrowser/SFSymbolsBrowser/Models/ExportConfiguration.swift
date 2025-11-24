@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Configuration for exporting symbols
 struct ExportConfiguration: Equatable, Sendable {
@@ -10,6 +11,21 @@ struct ExportConfiguration: Equatable, Sendable {
     var size: CGFloat = 64
 
     static let `default` = ExportConfiguration()
+
+    static func == (lhs: ExportConfiguration, rhs: ExportConfiguration) -> Bool {
+        lhs.format == rhs.format &&
+        lhs.scales == rhs.scales &&
+        lhs.weight == rhs.weight &&
+        lhs.color.isEqual(to: rhs.color) &&
+        lhs.renderingMode == rhs.renderingMode &&
+        lhs.size == rhs.size
+    }
+}
+
+private extension Color {
+    func isEqual(to other: Color) -> Bool {
+        UIColor(self) == UIColor(other)
+    }
 }
 
 // MARK: - Export Format
