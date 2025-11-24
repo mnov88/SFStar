@@ -104,8 +104,7 @@ actor ExportService {
     ) -> UIImage? {
         let uiWeight = weight.toUIFontWeight()
         let configuration = UIImage.SymbolConfiguration(
-            pointSize: size * 0.6,  // Symbol is ~60% of container
-            weight: uiWeight
+            font: UIFont.systemFont(ofSize: size * 0.6, weight: uiWeight)
         )
 
         guard let symbolImage = UIImage(systemName: name, withConfiguration: configuration) else {
@@ -121,7 +120,7 @@ actor ExportService {
 
             // Apply color
             let uiColor = UIColor(color)
-            let coloredImage = symbolImage.withTintColor(uiColor, renderingMode: .alwaysOriginal)
+            let coloredImage = symbolImage.withTintColor(uiColor, renderingMode: UIImage.RenderingMode.alwaysOriginal)
 
             // Center the symbol
             let symbolSize = coloredImage.size

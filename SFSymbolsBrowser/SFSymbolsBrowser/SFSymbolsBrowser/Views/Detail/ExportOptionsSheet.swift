@@ -14,7 +14,7 @@ struct ExportOptionsSheet: View {
     @State private var selectedFormat: ExportFormat = .png
     @State private var selectedScales: Set<ExportScale> = [.x2]
     @State private var isExporting = false
-    @State private var exportResult: ExportResult?
+    @State private var exportResult: ExportOutcome?
 
     private var exportService = ExportService()
 
@@ -227,7 +227,7 @@ struct ExportOptionsSheet: View {
 }
 
 // MARK: - Export Result
-enum ExportResult {
+enum ExportOutcome {
     case success(Void)
     case failure(Error)
 

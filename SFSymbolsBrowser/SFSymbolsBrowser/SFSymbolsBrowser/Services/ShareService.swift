@@ -81,28 +81,24 @@ struct ShareService {
         renderingMode: SymbolRenderingMode,
         size: CGFloat
     ) -> UIImage? {
-        let config = UIImage.SymbolConfiguration(pointSize: size, weight: weight.uiKitWeight)
-
-        guard var image = UIImage(systemName: name, withConfiguration: config) else {
-            return nil
-        }
-
-        // Apply rendering mode and color
+        let baseConfig = UIImage.SymbolConfiguration(pointSize: size, weight: weight.uiKitWeight)
         let uiColor = UIColor(color)
 
         switch renderingMode {
         case .monochrome:
-            image = image.withTintColor(uiColor, renderingMode: .alwaysOriginal)
-        case .hierarchical:
-            if let hierarchicalImage = image.applyingSymbolConfiguration(.preferringHierarchical()) {
-                image = hierarchicalImage.withTintColor(uiColor, renderingMode: .alwaysOriginal)
+            guard let image = UIImage(systemName: name, withConfiguration: baseConfig) else {
+                return nil
             }
-        case .palette, .multicolor:
-            // For palette/multicolor, use original colors
-            break
+            return image.withTintColor(uiColor, renderingMode: UIImage.RenderingMode.alwaysOriginal)
+        case .hierarchical:
+            let hierarchicalConfig = baseConfig.applying(UIImage.SymbolConfiguration(hierarchicalColor: uiColor))
+            return UIImage(systemName: name, withConfiguration: hierarchicalConfig)
+        case .palette:
+            let paletteConfig = baseConfig.applying(UIImage.SymbolConfiguration(paletteColors: [uiColor]))
+            return UIImage(systemName: name, withConfiguration: paletteConfig)
+        case .multicolor:
+            return UIImage(systemName: name, withConfiguration: baseConfig)
         }
-
-        return image
     }
 }
 
