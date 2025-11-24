@@ -434,6 +434,8 @@ struct CodeGenerationService {
 }
 
 // MARK: - Symbol Rendering Mode Extension
+extension SymbolRenderingMode: Equatable {}
+
 extension SymbolRenderingMode: CaseIterable, Identifiable {
     public static var allCases: [SymbolRenderingMode] {
         [.monochrome, .hierarchical, .palette, .multicolor]
