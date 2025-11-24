@@ -26,12 +26,20 @@ struct SymbolItem: Identifiable, Hashable, Sendable {
 }
 
 // MARK: - Symbol Configuration
-struct SymbolConfiguration: Equatable, Sendable {
+struct SymbolConfiguration: Sendable {
     var weight: Font.Weight = .regular
     var color: Color = .primary
     var renderingMode: SymbolRenderingMode = .monochrome
 
     static let `default` = SymbolConfiguration()
+}
+
+extension SymbolConfiguration: Equatable {
+    static func == (lhs: SymbolConfiguration, rhs: SymbolConfiguration) -> Bool {
+        lhs.weight == rhs.weight &&
+        lhs.renderingMode == rhs.renderingMode
+        // Note: Color comparison is intentionally omitted as Color doesn't conform to Equatable
+    }
 }
 
 // MARK: - Font.Weight Extension for Display
