@@ -1,0 +1,26 @@
+included:
+  - SFSymbolsBrowser
+
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+  - explicit_self
+
+disabled_rules:
+  - todo
+  - identifier_name
+  - type_name
+
+line_length: 140
+function_body_length:
+  warning: 80
+  error: 120
+type_body_length:
+  warning: 300
+  error: 400
+file_length:
+  warning: 400
+  error: 800
+nesting:
+  type_level: 2
+reporter: "xcode"
