@@ -1,5 +1,4 @@
 {
-  "originHash" : "",
   "pins" : [
     {
       "identity" : "sfsafesymbols",
@@ -11,5 +10,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
