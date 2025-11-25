@@ -103,12 +103,37 @@ actor ExportService {
         size: CGFloat
     ) -> UIImage? {
         let uiWeight = weight.toUIFontWeight()
-        let configuration = UIImage.SymbolConfiguration(
+        let uiColor = UIColor(color)
+        let baseConfiguration = UIImage.SymbolConfiguration(
             font: UIFont.systemFont(ofSize: size * 0.6, weight: uiWeight)
         )
 
-        guard let symbolImage = UIImage(systemName: name, withConfiguration: configuration) else {
+        let renderingConfiguration: UIImage.SymbolConfiguration
+        switch renderingMode {
+        case .monochrome:
+            renderingConfiguration = baseConfiguration
+        case .hierarchical:
+            renderingConfiguration = baseConfiguration.applying(
+                UIImage.SymbolConfiguration(hierarchicalColor: uiColor)
+            )
+        case .palette:
+            renderingConfiguration = baseConfiguration.applying(
+                UIImage.SymbolConfiguration(paletteColors: [uiColor])
+            )
+        case .multicolor:
+            renderingConfiguration = baseConfiguration.applying(.preferringMulticolor())
+        }
+
+        guard let symbolImage = UIImage(systemName: name, withConfiguration: renderingConfiguration) else {
             return nil
+        }
+
+        let renderedImage: UIImage
+        switch renderingMode {
+        case .monochrome:
+            renderedImage = symbolImage.withTintColor(uiColor, renderingMode: .alwaysOriginal)
+        case .hierarchical, .palette, .multicolor:
+            renderedImage = symbolImage.withRenderingMode(.alwaysOriginal)
         }
 
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: size, height: size))
@@ -118,16 +143,12 @@ actor ExportService {
             UIColor.clear.setFill()
             context.fill(CGRect(origin: .zero, size: CGSize(width: size, height: size)))
 
-            // Apply color
-            let uiColor = UIColor(color)
-            let coloredImage = symbolImage.withTintColor(uiColor, renderingMode: .alwaysOriginal)
-
             // Center the symbol
-            let symbolSize = coloredImage.size
+            let symbolSize = renderedImage.size
             let x = (size - symbolSize.width) / 2
             let y = (size - symbolSize.height) / 2
 
-            coloredImage.draw(at: CGPoint(x: x, y: y))
+            renderedImage.draw(at: CGPoint(x: x, y: y))
         }
     }
 

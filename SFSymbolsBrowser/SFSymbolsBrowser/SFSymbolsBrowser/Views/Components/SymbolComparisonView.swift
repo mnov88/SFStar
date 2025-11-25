@@ -320,7 +320,7 @@ struct SymbolSearchSheet: View {
     @State private var searchText = ""
     @State private var searchResults: [SymbolItem] = []
 
-    private let symbolRepository = SymbolRepository()
+    private let symbolRepository = SymbolRepository.shared
 
     var body: some View {
         NavigationStack {

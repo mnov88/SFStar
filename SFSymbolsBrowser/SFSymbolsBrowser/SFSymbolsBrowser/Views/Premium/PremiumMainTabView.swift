@@ -82,7 +82,7 @@ struct PremiumFavoritesView: View {
     @Environment(PersistenceService.self) private var persistence
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    @State private var repository = SymbolRepository()
+    @State private var repository = SymbolRepository.shared
     @State private var isCreatingCollection = false
     @State private var newCollectionName = ""
     @State private var selectedSymbols: Set<String> = []
@@ -396,7 +396,7 @@ struct PremiumCollectionDetailView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dismiss) private var dismiss
 
-    @State private var repository = SymbolRepository()
+    @State private var repository = SymbolRepository.shared
     @State private var isEditing = false
     @State private var editedName: String = ""
     @State private var showingDeleteConfirmation = false

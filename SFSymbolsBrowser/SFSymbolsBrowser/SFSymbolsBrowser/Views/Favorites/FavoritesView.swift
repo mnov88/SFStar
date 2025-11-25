@@ -6,7 +6,7 @@ struct FavoritesView: View {
     @Environment(PersistenceService.self) private var persistence
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    @State private var repository = SymbolRepository()
+    @State private var repository = SymbolRepository.shared
     @State private var isCreatingCollection = false
     @State private var newCollectionName = ""
     @State private var selectedSymbols: Set<String> = []
