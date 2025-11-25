@@ -53,7 +53,7 @@ final class SymbolGridViewModel {
     }
 
     // MARK: - Initialization
-    init(repository: SymbolRepository = SymbolRepository()) {
+    init(repository: SymbolRepository = .shared) {
         self.repository = repository
     }
 
