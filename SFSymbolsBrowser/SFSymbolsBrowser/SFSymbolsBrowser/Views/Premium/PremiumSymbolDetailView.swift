@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Premium symbol detail view with delightful animations and interactions
 struct PremiumSymbolDetailView: View {
@@ -114,7 +114,7 @@ struct PremiumSymbolDetailView: View {
                 Button {
                     copySymbolName()
                 } label: {
-                    Image(systemSymbol: .docOnDoc)
+                    Image(symbol: .docOnDoc)
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
@@ -149,7 +149,7 @@ struct PremiumSymbolDetailView: View {
                 Image(systemName: symbol.name)
                     .font(.system(size: 72))
                     .fontWeight(viewModel.configuration.weight)
-                    .symbolRenderingMode(viewModel.selectedRenderingMode)
+                    .symbolRenderingMode(swiftUISymbolRenderingMode)
                     .foregroundStyle(symbolGradient)
                     .scaleEffect(values.scale)
                     .rotationEffect(.degrees(values.rotation))
@@ -175,7 +175,7 @@ struct PremiumSymbolDetailView: View {
             Image(systemName: symbol.name)
                 .font(.system(size: 72))
                 .fontWeight(viewModel.configuration.weight)
-                .symbolRenderingMode(viewModel.selectedRenderingMode)
+                .symbolRenderingMode(swiftUISymbolRenderingMode)
                 .foregroundStyle(symbolGradient)
         }
     }
@@ -196,6 +196,20 @@ struct PremiumSymbolDetailView: View {
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
+    }
+
+    // Maps our custom RenderingMode to SwiftUI's SymbolRenderingMode
+    private var swiftUISymbolRenderingMode: SymbolRenderingMode? {
+        switch viewModel.selectedRenderingMode {
+        case .monochrome:
+            return .monochrome
+        case .hierarchical:
+            return .hierarchical
+        case .palette:
+            return .palette
+        case .multicolor:
+            return .multicolor
+        }
     }
 
     // MARK: - Weight Section
@@ -357,7 +371,7 @@ struct PremiumSymbolDetailView: View {
     // MARK: - Copied Toast
     private var copiedToast: some View {
         HStack(spacing: DesignSystem.Spacing.sm) {
-            Image(systemSymbol: .checkmarkCircleFill)
+            Image(symbol: .checkmarkCircleFill)
                 .foregroundStyle(.green)
 
             Text("Copied to clipboard")
@@ -378,7 +392,7 @@ struct PremiumSymbolDetailView: View {
                 Button {
                     showingExportSheet = true
                 } label: {
-                    Label("Export", systemSymbol: .squareAndArrowDown)
+                    Label("Export", symbol: .squareAndArrowDown)
                 }
 
                 Button {
@@ -390,10 +404,10 @@ struct PremiumSymbolDetailView: View {
                     )
                     HapticManager.shared.lightTap()
                 } label: {
-                    Label("Share", systemSymbol: .squareAndArrowUp)
+                    Label("Share", symbol: .squareAndArrowUp)
                 }
             } label: {
-                Image(systemSymbol: .ellipsisCircle)
+                Image(symbol: .ellipsisCircle)
             }
         }
     }
@@ -471,7 +485,7 @@ struct PremiumActionButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: DesignSystem.Spacing.sm) {
-                Image(systemSymbol: icon)
+                Image(symbol: icon)
                     .font(.title2)
                     .foregroundStyle(
                         LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing)
@@ -540,15 +554,15 @@ struct CollectionPickerSheet: View {
                                 dismiss()
                             } label: {
                                 HStack {
-                                    Image(systemSymbol: .folder)
-                                        .foregroundStyle(.accentColor)
+                                    Image(symbol: .folder)
+                                        .foregroundStyle(Color.accentColor)
 
                                     Text(collection.name)
 
                                     Spacer()
 
                                     if collection.symbolNames.contains(symbol.name) {
-                                        Image(systemSymbol: .checkmark)
+                                        Image(symbol: .checkmark)
                                             .foregroundStyle(.green)
                                     }
                                 }
@@ -577,7 +591,7 @@ struct CollectionPickerSheet: View {
                         Button {
                             isCreating = true
                         } label: {
-                            Label("Create New Collection", systemSymbol: .plusCircle)
+                            Label("Create New Collection", symbol: .plusCircle)
                         }
                     }
                 }

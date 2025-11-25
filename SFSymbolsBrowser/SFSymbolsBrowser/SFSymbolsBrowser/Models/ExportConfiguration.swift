@@ -7,7 +7,7 @@ struct ExportConfiguration: Equatable, Sendable {
     var scales: Set<ExportScale> = [.x2]
     var weight: Font.Weight = .regular
     var color: Color = .primary
-    var renderingMode: SymbolRenderingMode = .monochrome
+    var renderingMode: RenderingMode = .monochrome
     var size: CGFloat = 64
 
     static let `default` = ExportConfiguration()

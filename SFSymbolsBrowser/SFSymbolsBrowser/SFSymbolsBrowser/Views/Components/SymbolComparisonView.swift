@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// View for comparing multiple symbols or the same symbol with different configurations
 struct SymbolComparisonView: View {
@@ -9,7 +9,7 @@ struct SymbolComparisonView: View {
     @State private var comparisonMode: ComparisonMode = .weights
     @State private var selectedSymbols: [SymbolItem] = []
     @State private var baseColor: Color = .primary
-    @State private var baseRenderingMode: SymbolRenderingMode = .monochrome
+    @State private var baseRenderingMode: RenderingMode = .monochrome
     @State private var showSymbolPicker = false
 
     enum ComparisonMode: String, CaseIterable, Identifiable {
@@ -147,7 +147,7 @@ struct SymbolComparisonView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: DesignSystem.Spacing.md) {
-                ForEach(SymbolRenderingMode.allCases) { mode in
+                ForEach(RenderingMode.allCases) { mode in
                     ComparisonCell(
                         symbolName: primarySymbol.name,
                         weight: .regular,
@@ -260,10 +260,23 @@ private struct ComparisonCell: View {
     let symbolName: String
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
     let label: String
     var showRemoveButton: Bool = false
     var onRemove: (() -> Void)? = nil
+
+    private var systemSymbolRenderingMode: SymbolRenderingMode {
+        switch renderingMode {
+        case .monochrome:
+            return .monochrome
+        case .hierarchical:
+            return .hierarchical
+        case .palette:
+            return .palette
+        case .multicolor:
+            return .multicolor
+        }
+    }
 
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.sm) {
@@ -271,7 +284,7 @@ private struct ComparisonCell: View {
                 Image(systemName: symbolName)
                     .font(.system(size: 40))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(systemSymbolRenderingMode)
                     .foregroundStyle(color)
                     .frame(width: 80, height: 80)
                     .background(Color(.secondarySystemBackground))
@@ -385,7 +398,7 @@ struct MultiSymbolGridPreview: View {
     let symbols: [SymbolItem]
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
     var columns: Int = 3
     var symbolSize: CGFloat = 32
 
@@ -399,7 +412,7 @@ struct MultiSymbolGridPreview: View {
                 Image(systemName: symbol.name)
                     .font(.system(size: symbolSize))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .frame(maxWidth: .infinity)
                     .aspectRatio(1, contentMode: .fit)
@@ -414,7 +427,7 @@ struct MultiSymbolGridPreview: View {
 struct SymbolWeightVariantsRow: View {
     let symbolName: String
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -424,7 +437,7 @@ struct SymbolWeightVariantsRow: View {
                         Image(systemName: symbolName)
                             .font(.system(size: 28))
                             .fontWeight(weight)
-                            .symbolRenderingMode(renderingMode)
+                            .symbolRenderingMode(renderingMode.swiftUIMode)
                             .foregroundStyle(color)
                             .frame(width: 50, height: 50)
                             .background(Color(.tertiarySystemBackground))

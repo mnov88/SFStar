@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Premium picker for selecting and previewing symbol effects
 struct SymbolEffectPicker: View {
@@ -7,7 +7,7 @@ struct SymbolEffectPicker: View {
     let symbolName: String
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
 
     @State private var effectTrigger = 0
 
@@ -408,7 +408,7 @@ struct SymbolEffectPreview: View {
     let symbolName: String
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
     let configuration: SymbolEffectConfiguration
     let trigger: Int
 
@@ -420,7 +420,7 @@ struct SymbolEffectPreview: View {
             Image(systemName: symbolName)
                 .font(.system(size: 48))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
         }
     }
@@ -460,7 +460,7 @@ struct SymbolEffectPreview: View {
         Image(systemName: symbolName)
             .font(.system(size: 48))
             .fontWeight(weight)
-            .symbolRenderingMode(renderingMode)
+            .symbolRenderingMode(renderingMode.swiftUIMode)
             .foregroundStyle(color)
     }
 
@@ -478,7 +478,7 @@ struct SymbolEffectPreview: View {
         Image(systemName: symbolName)
             .font(.system(size: 48))
             .fontWeight(weight)
-            .symbolRenderingMode(renderingMode)
+            .symbolRenderingMode(renderingMode.swiftUIMode)
             .foregroundStyle(color)
             .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
     }
@@ -494,32 +494,28 @@ struct SymbolEffectPreview: View {
             Image(systemName: symbolName)
                 .font(.system(size: 48))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .symbolEffect(effect, options: effectOptions)
         } else {
             Image(systemName: symbolName)
                 .font(.system(size: 48))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .symbolEffect(effect, options: effectOptions, value: trigger)
         }
     }
 
     @available(iOS 17.0, *)
-    @ViewBuilder
-    private var variableColorEffect: some View {
+    private var configuredVariableColorEffect: VariableColorSymbolEffect {
         var effect: VariableColorSymbolEffect = .variableColor
 
         // Apply inactive layer style (per Apple docs)
-        switch configuration.variableColorInactiveStyle {
-        case .hideInactiveLayers:
+        if configuration.variableColorInactiveStyle == .hideInactiveLayers {
             effect = effect.hideInactiveLayers
-        case .dimInactiveLayers:
+        } else if configuration.variableColorInactiveStyle == .dimInactiveLayers {
             effect = effect.dimInactiveLayers
-        case .normal:
-            break
         }
 
         // Apply fill style
@@ -534,18 +530,26 @@ struct SymbolEffectPreview: View {
             effect = effect.reversing
         }
 
+        return effect
+    }
+
+    @available(iOS 17.0, *)
+    @ViewBuilder
+    private var variableColorEffect: some View {
+        let effect = configuredVariableColorEffect
+
         if configuration.repeatOption == .continuous {
             Image(systemName: symbolName)
                 .font(.system(size: 48))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .symbolEffect(effect, options: effectOptions)
         } else {
             Image(systemName: symbolName)
                 .font(.system(size: 48))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .symbolEffect(effect, options: effectOptions, value: trigger)
         }
@@ -565,7 +569,7 @@ struct SymbolEffectPreview: View {
         Image(systemName: symbolName)
             .font(.system(size: 48))
             .fontWeight(weight)
-            .symbolRenderingMode(renderingMode)
+            .symbolRenderingMode(renderingMode.swiftUIMode)
             .foregroundStyle(color)
             .symbolEffect(scopedEffect, options: effectOptions, isActive: true)
     }
@@ -588,14 +592,14 @@ struct SymbolEffectPreview: View {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .symbolEffect(scopedEffect, options: effectOptions)
             } else {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
             }
@@ -630,14 +634,14 @@ struct SymbolEffectPreview: View {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .symbolEffect(scopedEffect, options: effectOptions)
             } else {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
             }
@@ -663,14 +667,14 @@ struct SymbolEffectPreview: View {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .symbolEffect(scopedEffect, options: effectOptions)
             } else {
                 Image(systemName: symbolName)
                     .font(.system(size: 48))
                     .fontWeight(weight)
-                    .symbolRenderingMode(renderingMode)
+                    .symbolRenderingMode(renderingMode.swiftUIMode)
                     .foregroundStyle(color)
                     .symbolEffect(scopedEffect, options: effectOptions, value: trigger)
             }

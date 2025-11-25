@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Color picker with system colors grid and custom color option
 struct SymbolColorPicker: View {
@@ -87,7 +87,7 @@ struct ColorButton: View {
                         .strokeBorder(Color.white, lineWidth: 2)
                         .frame(width: 36, height: 36)
 
-                    Image(systemSymbol: .checkmark)
+                    Image(symbol: .checkmark)
                         .font(.caption.bold())
                         .foregroundStyle(.white)
                 }
@@ -211,7 +211,7 @@ struct PremiumColorButton: View {
 
                 // Checkmark for selection
                 if isSelected {
-                    Image(systemSymbol: .checkmark)
+                    Image(symbol: .checkmark)
                         .font(.caption.bold())
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.3), radius: 1, y: 1)

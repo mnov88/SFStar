@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// A view displayed when there's no content to show
 struct EmptyStateView: View {
@@ -11,7 +11,7 @@ struct EmptyStateView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemSymbol: icon)
+            Image(symbol: icon)
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
 

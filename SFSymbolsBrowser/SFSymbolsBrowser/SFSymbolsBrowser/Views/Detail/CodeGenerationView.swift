@@ -1,12 +1,12 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// View for generating and copying SwiftUI/UIKit code for symbols
 struct CodeGenerationView: View {
     let symbol: SymbolItem
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
     var effectConfiguration: SymbolEffectConfiguration? = nil
 
     @Environment(\.dismiss) private var dismiss
@@ -76,7 +76,7 @@ struct CodeGenerationView: View {
             Image(systemName: symbol.name)
                 .font(.system(size: 48))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .frame(width: 80, height: 80)
                 .background(Color(.secondarySystemBackground))
@@ -129,7 +129,7 @@ struct CodeGenerationView: View {
         Button {
             copyCode()
         } label: {
-            Label("Copy Code", systemSymbol: .docOnDoc)
+            Label("Copy Code", symbol: .docOnDoc)
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -142,7 +142,7 @@ struct CodeGenerationView: View {
     // MARK: - Copied Toast
     private var copiedToast: some View {
         HStack(spacing: 8) {
-            Image(systemSymbol: .checkmarkCircleFill)
+            Image(symbol: .checkmarkCircleFill)
                 .foregroundStyle(.green)
 
             Text("Copied to clipboard")
@@ -182,7 +182,7 @@ struct PremiumCodeGenerationView: View {
     let symbol: SymbolItem
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
     var effectConfiguration: SymbolEffectConfiguration? = nil
 
     @Environment(\.dismiss) private var dismiss
@@ -263,7 +263,7 @@ struct PremiumCodeGenerationView: View {
             Image(systemName: symbol.name)
                 .font(.system(size: 56))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .frame(width: 100, height: 100)
                 .glassEffect()
@@ -327,7 +327,7 @@ struct PremiumCodeGenerationView: View {
             copyCode()
         } label: {
             HStack(spacing: DesignSystem.Spacing.sm) {
-                Image(systemSymbol: .docOnDoc)
+                Image(symbol: .docOnDoc)
                 Text("Copy Code")
             }
             .font(.headline)
@@ -350,7 +350,7 @@ struct PremiumCodeGenerationView: View {
     // MARK: - Premium Copied Toast
     private var premiumCopiedToast: some View {
         HStack(spacing: DesignSystem.Spacing.sm) {
-            Image(systemSymbol: .checkmarkCircleFill)
+            Image(symbol: .checkmarkCircleFill)
                 .foregroundStyle(.green)
 
             Text("Copied to clipboard")

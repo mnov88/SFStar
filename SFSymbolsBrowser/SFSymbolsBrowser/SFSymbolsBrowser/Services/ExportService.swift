@@ -34,7 +34,7 @@ actor ExportService {
         symbolName: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         scale: ExportScale,
         baseSize: CGFloat = 64
     ) async throws -> ExportResult {
@@ -71,7 +71,7 @@ actor ExportService {
         symbolName: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         scales: Set<ExportScale>,
         baseSize: CGFloat = 64
     ) async throws -> [ExportResult] {
@@ -99,7 +99,7 @@ actor ExportService {
         name: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         size: CGFloat
     ) -> UIImage? {
         let uiWeight = weight.toUIFontWeight()
@@ -120,7 +120,7 @@ actor ExportService {
 
             // Apply color
             let uiColor = UIColor(color)
-            let coloredImage = symbolImage.withTintColor(uiColor, renderingMode: UIImage.RenderingMode.alwaysOriginal)
+            let coloredImage = symbolImage.withTintColor(uiColor, renderingMode: .alwaysOriginal)
 
             // Center the symbol
             let symbolSize = coloredImage.size

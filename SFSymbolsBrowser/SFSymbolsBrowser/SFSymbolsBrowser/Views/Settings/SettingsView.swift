@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Settings view for app configuration
 struct SettingsView: View {
@@ -79,13 +79,13 @@ struct SettingsView: View {
                 Button(role: .destructive) {
                     showingResetConfirmation = true
                 } label: {
-                    Label("Reset All Settings", systemSymbol: .arrowCounterclockwise)
+                    Label("Reset All Settings", symbol: .arrowCounterclockwise)
                 }
 
                 NavigationLink {
                     DataManagementView()
                 } label: {
-                    Label("Manage Data", systemSymbol: .externaldrive)
+                    Label("Manage Data", symbol: .externaldrive)
                 }
             } header: {
                 Text("Data")
@@ -98,11 +98,11 @@ struct SettingsView: View {
                 LabeledContent("Build", value: "MVP")
 
                 Link(destination: URL(string: "https://github.com")!) {
-                    Label("Send Feedback", systemSymbol: .envelope)
+                    Label("Send Feedback", symbol: .envelope)
                 }
 
                 Link(destination: URL(string: "https://developer.apple.com/sf-symbols/")!) {
-                    Label("SF Symbols Documentation", systemSymbol: .questionmarkCircle)
+                    Label("SF Symbols Documentation", symbol: .questionmarkCircle)
                 }
             } header: {
                 Text("About")
@@ -230,21 +230,21 @@ struct DataManagementView: View {
                 Button(role: .destructive) {
                     showingClearFavorites = true
                 } label: {
-                    Label("Clear All Favorites", systemSymbol: .starSlash)
+                    Label("Clear All Favorites", symbol: .starSlash)
                 }
                 .disabled(persistence.favoriteSymbolNames.isEmpty)
 
                 Button(role: .destructive) {
                     showingClearCollections = true
                 } label: {
-                    Label("Delete All Collections", systemSymbol: .folderBadgeMinus)
+                    Label("Delete All Collections", symbol: .folderBadgeMinus)
                 }
                 .disabled(persistence.collections.isEmpty)
 
                 Button(role: .destructive) {
                     showingClearAll = true
                 } label: {
-                    Label("Clear All Data", systemSymbol: .trash)
+                    Label("Clear All Data", symbol: .trash)
                 }
             } header: {
                 Text("Clear Data")

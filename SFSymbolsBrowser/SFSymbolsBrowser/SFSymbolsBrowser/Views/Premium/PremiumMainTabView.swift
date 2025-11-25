@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Premium tab view with delightful animations
 struct PremiumMainTabView: View {
@@ -45,7 +45,7 @@ struct PremiumMainTabView: View {
             }
             .tag(PremiumTab.search)
             .tabItem {
-                Label(PremiumTab.search.title, systemSymbol: selectedTab == .search ? PremiumTab.search.selectedIcon : PremiumTab.search.icon)
+                Label(PremiumTab.search.title, symbol: selectedTab == .search ? PremiumTab.search.selectedIcon : PremiumTab.search.icon)
             }
 
             // Favorites Tab
@@ -54,7 +54,7 @@ struct PremiumMainTabView: View {
             }
             .tag(PremiumTab.favorites)
             .tabItem {
-                Label(PremiumTab.favorites.title, systemSymbol: selectedTab == .favorites ? PremiumTab.favorites.selectedIcon : PremiumTab.favorites.icon)
+                Label(PremiumTab.favorites.title, symbol: selectedTab == .favorites ? PremiumTab.favorites.selectedIcon : PremiumTab.favorites.icon)
             }
             .badge(persistence.favoriteSymbolNames.count)
 
@@ -64,7 +64,7 @@ struct PremiumMainTabView: View {
             }
             .tag(PremiumTab.settings)
             .tabItem {
-                Label(PremiumTab.settings.title, systemSymbol: selectedTab == .settings ? PremiumTab.settings.selectedIcon : PremiumTab.settings.icon)
+                Label(PremiumTab.settings.title, symbol: selectedTab == .settings ? PremiumTab.settings.selectedIcon : PremiumTab.settings.icon)
             }
         }
         .onChange(of: selectedTab) { oldValue, newValue in
@@ -195,7 +195,7 @@ struct PremiumFavoritesView: View {
                         Label("New Collection", systemImage: "folder.badge.plus")
                     }
                 } label: {
-                    Image(systemSymbol: .ellipsisCircle)
+                    Image(symbol: .ellipsisCircle)
                 }
             }
         }
@@ -204,7 +204,7 @@ struct PremiumFavoritesView: View {
     // MARK: - Empty State
     private var emptyState: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
-            Image(systemSymbol: .heart)
+            Image(symbol: .heart)
                 .font(.system(size: 60))
                 .foregroundStyle(
                     LinearGradient(
@@ -308,8 +308,8 @@ struct PremiumFavoritesView: View {
                     isFavorite: true
                 )
 
-                Image(systemSymbol: selectedSymbols.contains(symbol.name) ? .checkmarkCircleFill : .circle)
-                    .foregroundStyle(selectedSymbols.contains(symbol.name) ? .accentColor : .secondary)
+                Image(symbol: selectedSymbols.contains(symbol.name) ? .checkmarkCircleFill : .circle)
+                    .foregroundStyle(selectedSymbols.contains(symbol.name) ? .primary : .secondary)
                     .background(Circle().fill(.background))
                     .font(.title3)
                     .padding(6)
@@ -359,7 +359,7 @@ struct PremiumCollectionRow: View {
 
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.md) {
-            Image(systemSymbol: .folder)
+            Image(symbol: .folder)
                 .font(.title2)
                 .foregroundStyle(
                     LinearGradient(
@@ -380,7 +380,7 @@ struct PremiumCollectionRow: View {
 
             Spacer()
 
-            Image(systemSymbol: .chevronRight)
+            Image(symbol: .chevronRight)
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
@@ -509,7 +509,7 @@ struct PremiumCollectionDetailView: View {
                     Label("Delete Collection", systemImage: "trash")
                 }
             } label: {
-                Image(systemSymbol: .ellipsisCircle)
+                Image(symbol: .ellipsisCircle)
             }
         }
     }
@@ -527,7 +527,7 @@ struct PremiumSettingsView: View {
             Section {
                 Toggle(isOn: $usePremiumUI) {
                     HStack {
-                        Image(systemSymbol: .sparkles)
+                        Image(symbol: .sparkles)
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: DesignSystem.Gradient.dawn,
@@ -624,13 +624,13 @@ struct PremiumSettingsView: View {
                 Button(role: .destructive) {
                     showingResetConfirmation = true
                 } label: {
-                    Label("Reset All Settings", systemSymbol: .arrowCounterclockwise)
+                    Label("Reset All Settings", symbol: .arrowCounterclockwise)
                 }
 
                 NavigationLink {
                     PremiumDataManagementView()
                 } label: {
-                    Label("Manage Data", systemSymbol: .externaldrive)
+                    Label("Manage Data", symbol: .externaldrive)
                 }
             } header: {
                 Text("Data")
@@ -643,11 +643,11 @@ struct PremiumSettingsView: View {
                 LabeledContent("Build", value: "Premium")
 
                 Link(destination: URL(string: "https://github.com")!) {
-                    Label("Send Feedback", systemSymbol: .envelope)
+                    Label("Send Feedback", symbol: .envelope)
                 }
 
                 Link(destination: URL(string: "https://developer.apple.com/sf-symbols/")!) {
-                    Label("SF Symbols Documentation", systemSymbol: .questionmarkCircle)
+                    Label("SF Symbols Documentation", symbol: .questionmarkCircle)
                 }
             } header: {
                 Text("About")
@@ -777,21 +777,21 @@ struct PremiumDataManagementView: View {
                 Button(role: .destructive) {
                     showingClearFavorites = true
                 } label: {
-                    Label("Clear All Favorites", systemSymbol: .starSlash)
+                    Label("Clear All Favorites", symbol: .starSlash)
                 }
                 .disabled(persistence.favoriteSymbolNames.isEmpty)
 
                 Button(role: .destructive) {
                     showingClearCollections = true
                 } label: {
-                    Label("Delete All Collections", systemSymbol: .folderBadgeMinus)
+                    Label("Delete All Collections", symbol: .folderBadgeMinus)
                 }
                 .disabled(persistence.collections.isEmpty)
 
                 Button(role: .destructive) {
                     showingClearAll = true
                 } label: {
-                    Label("Clear All Data", systemSymbol: .trash)
+                    Label("Clear All Data", symbol: .trash)
                 }
             } header: {
                 Text("Clear Data")

@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// A toast notification view
 struct ToastView: View {
@@ -8,7 +8,7 @@ struct ToastView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemSymbol: icon)
+            Image(symbol: icon)
                 .foregroundStyle(.white)
 
             Text(message)
@@ -42,7 +42,7 @@ struct ErrorToast: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemSymbol: .exclamationmarkCircleFill)
+            Image(symbol: .exclamationmarkCircleFill)
                 .foregroundStyle(.white)
 
             Text(message)

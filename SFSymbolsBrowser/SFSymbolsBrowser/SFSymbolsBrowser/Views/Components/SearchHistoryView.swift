@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// View displaying recent search history with tap-to-search and swipe-to-delete
 struct SearchHistoryView: View {
@@ -51,7 +51,7 @@ struct SearchHistoryChip: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 6) {
-                Image(systemSymbol: .clock)
+                Image(symbol: .clock)
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
@@ -62,7 +62,7 @@ struct SearchHistoryChip: View {
                 Button {
                     onDelete()
                 } label: {
-                    Image(systemSymbol: .xmarkCircleFill)
+                    Image(symbol: .xmarkCircleFill)
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
@@ -88,7 +88,7 @@ struct PremiumSearchHistoryView: View {
         if !persistence.searchHistory.isEmpty {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                 HStack {
-                    Label("Recent", systemSymbol: .clockArrowCirclepath)
+                    Label("Recent", symbol: .clockArrowCirclepath)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 
@@ -137,7 +137,7 @@ struct PremiumSearchHistoryChip: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 6) {
-                Image(systemSymbol: .magnifyingglass)
+                Image(symbol: .magnifyingglass)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
 
@@ -148,7 +148,7 @@ struct PremiumSearchHistoryChip: View {
                 Button {
                     onDelete()
                 } label: {
-                    Image(systemSymbol: .xmarkCircleFill)
+                    Image(symbol: .xmarkCircleFill)
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }

@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Premium symbol grid with ambient animations and delightful interactions
 struct PremiumSymbolGridView: View {
@@ -43,7 +43,7 @@ struct PremiumSymbolGridView: View {
         .searchSuggestions {
             if viewModel.searchText.isEmpty && !persistence.searchHistory.isEmpty {
                 ForEach(persistence.searchHistory, id: \.self) { query in
-                    Label(query, systemSymbol: .clock)
+                    Label(query, symbol: .clock)
                         .searchCompletion(query)
                 }
             }
@@ -169,7 +169,7 @@ struct PremiumSymbolGridView: View {
                 showingFilters = true
                 HapticManager.shared.lightTap()
             } label: {
-                Image(systemSymbol: .line3HorizontalDecreaseCircle)
+                Image(symbol: .line3HorizontalDecreaseCircle)
                     .symbolVariant(viewModel.selectedCategory != nil ? .fill : .none)
                     .symbolEffect(.bounce, value: viewModel.selectedCategory)
             }
@@ -183,7 +183,7 @@ struct PremiumSymbolGridView: View {
 
                 Text("\(viewModel.filteredSymbols.count) symbols")
             } label: {
-                Image(systemSymbol: .ellipsisCircle)
+                Image(symbol: .ellipsisCircle)
             }
         }
     }
@@ -202,7 +202,7 @@ struct PremiumCategoryFilterSheet: View {
                     // All symbols option
                     categoryCard(
                         title: "All Symbols",
-                        icon: .squareGrid2x2,
+                        icon: "square.grid.2x2",
                         count: symbolCounts.values.reduce(0, +),
                         isSelected: selectedCategory == nil,
                         colors: DesignSystem.Gradient.ocean
@@ -212,17 +212,8 @@ struct PremiumCategoryFilterSheet: View {
                     }
 
                     // Category cards
-                    ForEach(SymbolCategory.allCases) { category in
-                        categoryCard(
-                            title: category.displayName,
-                            icon: category.icon,
-                            count: symbolCounts[category] ?? 0,
-                            isSelected: selectedCategory == category,
-                            colors: gradientForCategory(category)
-                        ) {
-                            selectedCategory = category
-                            dismiss()
-                        }
+                    ForEach(SymbolCategory.allCases.filter { $0 != .all }) { category in
+                        makeCategoryCard(for: category)
                     }
                 }
                 .padding()
@@ -241,7 +232,7 @@ struct PremiumCategoryFilterSheet: View {
 
     private func categoryCard(
         title: String,
-        icon: SFSymbol,
+        icon: String,
         count: Int,
         isSelected: Bool,
         colors: [Color],
@@ -253,7 +244,7 @@ struct PremiumCategoryFilterSheet: View {
         }) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Image(systemSymbol: icon)
+                    Image(systemName: icon)
                         .font(.title2)
                         .foregroundStyle(
                             LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
@@ -262,8 +253,8 @@ struct PremiumCategoryFilterSheet: View {
                     Spacer()
 
                     if isSelected {
-                        Image(systemSymbol: .checkmarkCircleFill)
-                            .foregroundStyle(.accentColor)
+                        Image(symbol: .checkmarkCircleFill)
+                            .foregroundStyle(Color.accentColor)
                     }
                 }
 
@@ -292,33 +283,47 @@ struct PremiumCategoryFilterSheet: View {
         .buttonStyle(.plain)
     }
 
+    @ViewBuilder
+    private func makeCategoryCard(for category: SymbolCategory) -> some View {
+        let icon = iconForCategory(category)
+        let count = symbolCounts[category] ?? 0
+        let isSelected = selectedCategory == category
+        let colors = gradientForCategory(category)
+        
+        categoryCard(
+            title: category.rawValue,
+            icon: icon,
+            count: count,
+            isSelected: isSelected,
+            colors: colors
+        ) {
+            selectedCategory = category
+            dismiss()
+        }
+    }
+    
+    private func iconForCategory(_ category: SymbolCategory) -> String {
+        category.systemImage
+    }
+    
     private func gradientForCategory(_ category: SymbolCategory) -> [Color] {
         switch category {
-        case .general: return DesignSystem.Gradient.ocean
+        case .all: return DesignSystem.Gradient.ocean
         case .communication: return [.blue, .cyan]
         case .weather: return [.orange, .yellow]
-        case .objectsAndTools: return [.gray, .brown]
+        case .objectsTools: return [.gray, .brown]
         case .devices: return [.purple, .indigo]
         case .gaming: return [.pink, .red]
         case .connectivity: return [.green, .mint]
         case .transportation: return [.blue, .purple]
-        case .accessibility: return [.blue, .green]
-        case .privacy: return [.gray, .black]
         case .human: return [.orange, .pink]
-        case .home: return [.brown, .orange]
-        case .fitness: return [.red, .orange]
         case .nature: return DesignSystem.Gradient.forest
-        case .editing: return [.purple, .pink]
         case .textFormatting: return [.gray, .blue]
         case .media: return [.red, .pink]
-        case .keyboard: return [.gray, .blue]
         case .commerce: return [.green, .mint]
-        case .time: return [.orange, .red]
         case .health: return [.red, .pink]
         case .shapes: return [.purple, .blue]
         case .arrows: return [.blue, .cyan]
-        case .indices: return [.gray, .black]
-        case .math: return [.orange, .yellow]
         }
     }
 }
@@ -333,7 +338,7 @@ struct PremiumEmptyStateView: View {
 
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
-            Image(systemSymbol: icon)
+            Image(symbol: icon)
                 .font(.system(size: 56))
                 .foregroundStyle(
                     LinearGradient(

@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Main grid view displaying all SF Symbols
 struct SymbolGridView: View {

@@ -8,7 +8,7 @@ final class SymbolDetailViewModel {
 
     var selectedWeight: Font.Weight = .regular
     var selectedColor: Color = .primary
-    var selectedRenderingMode: SymbolRenderingMode = .monochrome
+    var selectedRenderingMode: RenderingMode = .monochrome
 
     // Symbol effect configuration
     var effectConfiguration: SymbolEffectConfiguration = SymbolEffectConfiguration()
@@ -141,7 +141,7 @@ final class SymbolDetailViewModel {
 
     /// Set rendering mode with haptic feedback
     @MainActor
-    func setRenderingMode(_ mode: SymbolRenderingMode) {
+    func setRenderingMode(_ mode: RenderingMode) {
         selectedRenderingMode = mode
         provideFeedback(.selection)
     }

@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// View displaying user's favorite symbols and collections
 struct FavoritesView: View {
@@ -95,7 +95,7 @@ struct FavoritesView: View {
                 Button {
                     isCreatingCollection = true
                 } label: {
-                    Label("New Collection", systemSymbol: .plusCircle)
+                    Label("New Collection", symbol: .plusCircle)
                 }
             } header: {
                 Text("Collections")
@@ -136,7 +136,7 @@ struct FavoritesView: View {
             ZStack(alignment: .topLeading) {
                 SymbolCellView(symbol: symbol, isFavorite: true)
 
-                Image(systemSymbol: selectedSymbols.contains(symbol.name) ? .checkmarkCircleFill : .circle)
+                Image(symbol: selectedSymbols.contains(symbol.name) ? .checkmarkCircleFill : .circle)
                     .foregroundStyle(selectedSymbols.contains(symbol.name) ? Color.accentColor : .secondary)
                     .background(Circle().fill(.background))
                     .padding(4)
@@ -221,7 +221,7 @@ struct FavoritesView: View {
                         Label("New Collection", systemImage: "folder.badge.plus")
                     }
                 } label: {
-                    Image(systemSymbol: .ellipsisCircle)
+                    Image(symbol: .ellipsisCircle)
                 }
             }
         }
@@ -261,7 +261,7 @@ struct CollectionRow: View {
 
     var body: some View {
         HStack {
-            Image(systemSymbol: .folder)
+            Image(symbol: .folder)
                 .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {

@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Detail view for a single symbol with customization options
 struct SymbolDetailView: View {
@@ -11,6 +11,16 @@ struct SymbolDetailView: View {
     @State private var viewModel: SymbolDetailViewModel
     @State private var showingExportOptions = false
     @State private var showingCodeGeneration = false
+
+    // Adapter to map our view model rendering mode to SwiftUI's SymbolRenderingMode
+    private var uiSymbolRenderingMode: SymbolRenderingMode {
+        switch viewModel.selectedRenderingMode {
+        case .monochrome: return .monochrome
+        case .hierarchical: return .hierarchical
+        case .palette: return .palette
+        case .multicolor: return .multicolor
+        }
+    }
 
     init(symbol: SymbolItem) {
         self.symbol = symbol
@@ -77,11 +87,11 @@ struct SymbolDetailView: View {
 
     // MARK: - Symbol Preview
     private var symbolPreview: some View {
-        Image(systemSymbol: symbol.symbol)
+        Image(symbol: symbol.symbol)
             .font(.system(size: horizontalSizeClass == .regular ? 160 : 128))
             .foregroundStyle(viewModel.selectedColor)
             .fontWeight(viewModel.selectedWeight)
-            .symbolRenderingMode(viewModel.selectedRenderingMode)
+            .symbolRenderingMode(uiSymbolRenderingMode)
             .frame(height: horizontalSizeClass == .regular ? 200 : 160)
             .frame(maxWidth: .infinity)
             .accessibilityLabel(symbol.name)
@@ -137,11 +147,11 @@ struct SymbolDetailView: View {
             HStack(spacing: 16) {
                 ForEach([32, 48, 64], id: \.self) { size in
                     VStack {
-                        Image(systemSymbol: symbol.symbol)
+                        Image(symbol: symbol.symbol)
                             .font(.system(size: CGFloat(size)))
                             .foregroundStyle(viewModel.selectedColor)
                             .fontWeight(viewModel.selectedWeight)
-                            .symbolRenderingMode(viewModel.selectedRenderingMode)
+                            .symbolRenderingMode(uiSymbolRenderingMode)
 
                         Text("\(size)pt")
                             .font(.caption2)
@@ -168,7 +178,7 @@ struct SymbolDetailView: View {
                     showingExportOptions = true
                 } label: {
                     HStack {
-                        Image(systemSymbol: .squareAndArrowDown)
+                        Image(symbol: .squareAndArrowDown)
                         Text("Export")
                     }
                     .frame(maxWidth: .infinity)
@@ -180,7 +190,7 @@ struct SymbolDetailView: View {
                     showingCodeGeneration = true
                 } label: {
                     HStack {
-                        Image(systemSymbol: .chevronLeftForwardslashChevronRight)
+                        Image(symbol: .chevronLeftForwardslashChevronRight)
                         Text("Code")
                     }
                     .frame(maxWidth: .infinity)
@@ -195,7 +205,7 @@ struct SymbolDetailView: View {
                     viewModel.copyName()
                 } label: {
                     HStack {
-                        Image(systemSymbol: .docOnDoc)
+                        Image(symbol: .docOnDoc)
                         Text("Copy Name")
                     }
                     .frame(maxWidth: .infinity)
@@ -214,7 +224,7 @@ struct SymbolDetailView: View {
                         }
                     } label: {
                         HStack {
-                            Image(systemSymbol: .folderBadgePlus)
+                            Image(symbol: .folderBadgePlus)
                             Text("Collection")
                         }
                         .frame(maxWidth: .infinity)
@@ -233,7 +243,7 @@ struct SymbolDetailView: View {
             Button {
                 persistence.toggleFavorite(symbol)
             } label: {
-                Image(systemSymbol: persistence.isFavorite(symbol) ? .starFill : .star)
+                Image(symbol: persistence.isFavorite(symbol) ? .starFill : .star)
                     .foregroundStyle(persistence.isFavorite(symbol) ? .yellow : .primary)
             }
         }

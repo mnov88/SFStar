@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Service for generating SwiftUI and UIKit code from symbol configurations
 struct CodeGenerationService {
@@ -16,7 +16,7 @@ struct CodeGenerationService {
         symbolName: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         size: CGFloat = 32,
         framework: Framework,
         effectConfiguration: SymbolEffectConfiguration? = nil
@@ -49,7 +49,7 @@ struct CodeGenerationService {
         symbolName: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         size: CGFloat,
         effectConfiguration: SymbolEffectConfiguration?
     ) -> String {
@@ -202,7 +202,7 @@ struct CodeGenerationService {
         symbolName: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         size: CGFloat,
         effectConfiguration: SymbolEffectConfiguration?
     ) -> String {
@@ -242,8 +242,8 @@ struct CodeGenerationService {
                 lines.append("imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(paletteColors: [\(colorCode), .systemGray])")
             case .multicolor:
                 lines.append("imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration.preferringMulticolor()")
-            default:
-                break
+            case .monochrome:
+                break // Already handled above
             }
         }
 
@@ -348,14 +348,8 @@ struct CodeGenerationService {
 
     // MARK: - Helper Methods
 
-    private func renderingModeName(_ mode: SymbolRenderingMode) -> String {
-        switch mode {
-        case .monochrome: return "monochrome"
-        case .hierarchical: return "hierarchical"
-        case .palette: return "palette"
-        case .multicolor: return "multicolor"
-        @unknown default: return "monochrome"
-        }
+    private func renderingModeName(_ mode: RenderingMode) -> String {
+        return mode.rawValue
     }
 
     private func swiftUIWeightName(_ weight: Font.Weight) -> String {
@@ -433,33 +427,3 @@ struct CodeGenerationService {
     }
 }
 
-// MARK: - Symbol Rendering Mode Extension
-extension SymbolRenderingMode: Equatable {}
-
-extension SymbolRenderingMode: CaseIterable, Identifiable {
-    public static var allCases: [SymbolRenderingMode] {
-        [.monochrome, .hierarchical, .palette, .multicolor]
-    }
-
-    public var id: String { displayName }
-
-    var displayName: String {
-        switch self {
-        case .monochrome: return "Mono"
-        case .hierarchical: return "Hierarchical"
-        case .palette: return "Palette"
-        case .multicolor: return "Multicolor"
-        @unknown default: return "Unknown"
-        }
-    }
-
-    var description: String {
-        switch self {
-        case .monochrome: return "Single color"
-        case .hierarchical: return "Depth via opacity"
-        case .palette: return "Up to 3 colors"
-        case .multicolor: return "Original colors"
-        @unknown default: return ""
-        }
-    }
-}

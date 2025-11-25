@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Premium iPad sidebar navigation with enhanced animations
 struct PremiumiPadSidebarView: View {
@@ -48,7 +48,7 @@ struct PremiumiPadSidebarView: View {
                     Label {
                         Text("All Symbols")
                     } icon: {
-                        Image(systemSymbol: .magnifyingglass)
+                        Image(symbol: .magnifyingglass)
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: DesignSystem.Gradient.ocean,
@@ -77,7 +77,7 @@ struct PremiumiPadSidebarView: View {
                             }
                         }
                     } icon: {
-                        Image(systemSymbol: .heart)
+                        Image(symbol: .heart)
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [.pink, .red],
@@ -100,7 +100,7 @@ struct PremiumiPadSidebarView: View {
                                     .foregroundStyle(.secondary)
                             }
                         } icon: {
-                            Image(systemSymbol: .folder)
+                            Image(symbol: .folder)
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [.blue, .purple],
@@ -120,7 +120,7 @@ struct PremiumiPadSidebarView: View {
                     Label {
                         Text("Settings")
                     } icon: {
-                        Image(systemSymbol: .gearshape)
+                        Image(symbol: .gearshape)
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -132,7 +132,7 @@ struct PremiumiPadSidebarView: View {
                 Button {
                     createNewCollection()
                 } label: {
-                    Image(systemSymbol: .folderBadgePlus)
+                    Image(symbol: .folderBadgePlus)
                 }
             }
         }

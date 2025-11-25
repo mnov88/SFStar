@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// A single cell in the symbol grid
 struct SymbolCellView: View {
@@ -11,13 +11,13 @@ struct SymbolCellView: View {
     var body: some View {
         VStack(spacing: 4) {
             ZStack(alignment: .topTrailing) {
-                Image(systemSymbol: symbol.symbol)
+                Image(symbol: symbol.symbol)
                     .font(.system(size: 28))
                     .foregroundStyle(.primary)
                     .frame(width: 48, height: 48)
 
                 if isFavorite {
-                    Image(systemSymbol: .starFill)
+                    Image(symbol: .starFill)
                         .font(.system(size: 8))
                         .foregroundStyle(.yellow)
                         .offset(x: 4, y: -4)
@@ -43,13 +43,13 @@ struct SymbolCellLargeView: View {
     var body: some View {
         VStack(spacing: 8) {
             ZStack(alignment: .topTrailing) {
-                Image(systemSymbol: symbol.symbol)
+                Image(symbol: symbol.symbol)
                     .font(.system(size: 36))
                     .foregroundStyle(.primary)
                     .frame(width: 56, height: 56)
 
                 if isFavorite {
-                    Image(systemSymbol: .starFill)
+                    Image(symbol: .starFill)
                         .font(.system(size: 10))
                         .foregroundStyle(.yellow)
                         .offset(x: 4, y: -4)

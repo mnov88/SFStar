@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		079CDE372ED4CF1F004DE0C4 /* SFSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 079CDE362ED4CF1F004DE0C4 /* SFSymbols */; };
 		07A608572ED45CFD00F9B054 /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 07A608562ED45CFD00F9B054 /* SFSafeSymbols */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				07A608572ED45CFD00F9B054 /* SFSafeSymbols in Frameworks */,
+				079CDE372ED4CF1F004DE0C4 /* SFSymbols in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			name = SFSymbolsBrowser;
 			packageProductDependencies = (
 				07A608562ED45CFD00F9B054 /* SFSafeSymbols */,
+				079CDE362ED4CF1F004DE0C4 /* SFSymbols */,
 			);
 			productName = SFSymbolsBrowser;
 			productReference = 07A607E42ED45CB700F9B054 /* SFSymbolsBrowser.app */;
@@ -102,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				07A608552ED45CFD00F9B054 /* XCRemoteSwiftPackageReference "SFSafeSymbols" */,
+				079CDE352ED4CF1F004DE0C4 /* XCRemoteSwiftPackageReference "SFSymbols" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 07A607E52ED45CB700F9B054 /* Products */;
@@ -343,6 +347,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		079CDE352ED4CF1F004DE0C4 /* XCRemoteSwiftPackageReference "SFSymbols" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Rspoon3/SFSymbols";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.1;
+			};
+		};
 		07A608552ED45CFD00F9B054 /* XCRemoteSwiftPackageReference "SFSafeSymbols" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SFSafeSymbols/SFSafeSymbols";
@@ -354,6 +366,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		079CDE362ED4CF1F004DE0C4 /* SFSymbols */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 079CDE352ED4CF1F004DE0C4 /* XCRemoteSwiftPackageReference "SFSymbols" */;
+			productName = SFSymbols;
+		};
 		07A608562ED45CFD00F9B054 /* SFSafeSymbols */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 07A608552ED45CFD00F9B054 /* XCRemoteSwiftPackageReference "SFSafeSymbols" */;

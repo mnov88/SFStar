@@ -1,12 +1,12 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Sheet for configuring and executing symbol exports with multi-scale support
 struct ExportOptionsSheet: View {
     let symbol: SymbolItem
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
 
     @Environment(\.dismiss) private var dismiss
     @Environment(PersistenceService.self) private var persistence
@@ -18,7 +18,7 @@ struct ExportOptionsSheet: View {
 
     private var exportService = ExportService()
 
-    init(symbol: SymbolItem, weight: Font.Weight, color: Color, renderingMode: SymbolRenderingMode) {
+    init(symbol: SymbolItem, weight: Font.Weight, color: Color, renderingMode: RenderingMode) {
         self.symbol = symbol
         self.weight = weight
         self.color = color
@@ -72,7 +72,7 @@ struct ExportOptionsSheet: View {
                 Section("Output") {
                     ForEach(fileNames, id: \.self) { fileName in
                         HStack {
-                            Image(systemSymbol: .docFill)
+                            Image(symbol: .docFill)
                                 .foregroundStyle(.secondary)
                             Text(fileName)
                                 .font(.subheadline.monospaced())
@@ -142,7 +142,7 @@ struct ExportOptionsSheet: View {
             Image(systemName: symbol.name)
                 .font(.system(size: 40))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .frame(width: 60, height: 60)
                 .background(Color(.secondarySystemBackground))
@@ -194,9 +194,9 @@ struct ExportOptionsSheet: View {
                         let _ = try await exportService.exportPNG(
                             symbolName: symbol.name,
                             weight: weight,
-                            scale: scale,
-                            color: UIColor(color),
-                            renderingMode: renderingMode
+                            color: color,
+                            renderingMode: renderingMode,
+                            scale: scale
                         )
                     }
                 } else {
@@ -247,7 +247,7 @@ struct PremiumExportOptionsSheet: View {
     let symbol: SymbolItem
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
 
     @Environment(\.dismiss) private var dismiss
     @Environment(PersistenceService.self) private var persistence
@@ -260,7 +260,7 @@ struct PremiumExportOptionsSheet: View {
 
     private var exportService = ExportService()
 
-    init(symbol: SymbolItem, weight: Font.Weight, color: Color, renderingMode: SymbolRenderingMode) {
+    init(symbol: SymbolItem, weight: Font.Weight, color: Color, renderingMode: RenderingMode) {
         self.symbol = symbol
         self.weight = weight
         self.color = color
@@ -320,7 +320,7 @@ struct PremiumExportOptionsSheet: View {
             Image(systemName: symbol.name)
                 .font(.system(size: 64))
                 .fontWeight(weight)
-                .symbolRenderingMode(renderingMode)
+                .symbolRenderingMode(renderingMode.swiftUIMode)
                 .foregroundStyle(color)
                 .frame(width: 120, height: 120)
                 .glassEffect()
@@ -421,9 +421,9 @@ struct PremiumExportOptionsSheet: View {
                     ProgressView()
                         .tint(.white)
                 } else if exportSuccess {
-                    Image(systemSymbol: .checkmark)
+                    Image(symbol: .checkmark)
                 } else {
-                    Image(systemSymbol: .squareAndArrowUp)
+                    Image(symbol: .squareAndArrowUp)
                 }
 
                 Text(exportSuccess ? "Exported!" : "Export \(selectedScales.count) File\(selectedScales.count == 1 ? "" : "s")")

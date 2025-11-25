@@ -14,7 +14,7 @@ struct ShareService {
         name: String,
         weight: Font.Weight = .regular,
         color: Color = .primary,
-        renderingMode: SymbolRenderingMode = .monochrome,
+        renderingMode: RenderingMode = .monochrome,
         size: CGFloat = 100
     ) {
         guard let image = renderSymbolImage(
@@ -78,7 +78,7 @@ struct ShareService {
         name: String,
         weight: Font.Weight,
         color: Color,
-        renderingMode: SymbolRenderingMode,
+        renderingMode: RenderingMode,
         size: CGFloat
     ) -> UIImage? {
         let baseConfig = UIImage.SymbolConfiguration(pointSize: size, weight: weight.uiKitWeight)
@@ -89,7 +89,7 @@ struct ShareService {
             guard let image = UIImage(systemName: name, withConfiguration: baseConfig) else {
                 return nil
             }
-            return image.withTintColor(uiColor, renderingMode: UIImage.RenderingMode.alwaysOriginal)
+            return image.withTintColor(uiColor, renderingMode: .alwaysOriginal)
         case .hierarchical:
             let hierarchicalConfig = baseConfig.applying(UIImage.SymbolConfiguration(hierarchicalColor: uiColor))
             return UIImage(systemName: name, withConfiguration: hierarchicalConfig)
@@ -125,7 +125,7 @@ struct ShareButton: View {
     let symbolName: String
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
 
     var body: some View {
         Button {
@@ -147,7 +147,7 @@ struct PremiumShareButton: View {
     let symbolName: String
     let weight: Font.Weight
     let color: Color
-    let renderingMode: SymbolRenderingMode
+    let renderingMode: RenderingMode
 
     var body: some View {
         Menu {

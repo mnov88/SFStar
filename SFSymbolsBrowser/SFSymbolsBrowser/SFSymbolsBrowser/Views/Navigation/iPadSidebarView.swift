@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// iPad sidebar-based navigation with NavigationSplitView
 struct iPadSidebarView: View {
@@ -23,7 +23,7 @@ struct iPadSidebarView: View {
     private var sidebar: some View {
         List(selection: $selectedSection) {
             Section {
-                Label("Search", systemSymbol: .magnifyingglass)
+                Label("Search", symbol: .magnifyingglass)
                     .tag(SidebarSection.search)
 
                 Label {
@@ -37,7 +37,7 @@ struct iPadSidebarView: View {
                         }
                     }
                 } icon: {
-                    Image(systemSymbol: .star)
+                    Image(symbol: .star)
                 }
                 .tag(SidebarSection.favorites)
             }
@@ -58,7 +58,7 @@ struct iPadSidebarView: View {
                                     .foregroundStyle(.secondary)
                             }
                         } icon: {
-                            Image(systemSymbol: .folder)
+                            Image(symbol: .folder)
                         }
                         .tag(SidebarSection.collection(collection.id))
                     }
@@ -68,14 +68,14 @@ struct iPadSidebarView: View {
                 Button {
                     createNewCollection()
                 } label: {
-                    Label("New Collection", systemSymbol: .plusCircle)
+                    Label("New Collection", symbol: .plusCircle)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(.accentColor)
+                .foregroundStyle(Color.accentColor)
             }
 
             Section {
-                Label("Settings", systemSymbol: .gear)
+                Label("Settings", symbol: .gear)
                     .tag(SidebarSection.settings)
             }
         }

@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Premium symbol cell with micro-interactions and delightful animations
 struct PremiumSymbolCellView: View {
@@ -137,7 +137,7 @@ struct PremiumSymbolCellView: View {
     @ViewBuilder
     private var favoriteIndicator: some View {
         if isFavorite {
-            Image(systemSymbol: .heartFill)
+            Image(symbol: .heartFill)
                 .font(.caption2)
                 .foregroundStyle(
                     LinearGradient(
@@ -182,7 +182,7 @@ struct SelectablePremiumSymbolCellView: View {
                             )
                     )
                     .overlay(
-                        Image(systemSymbol: .checkmark)
+                        Image(symbol: .checkmark)
                             .font(.caption2.bold())
                             .foregroundStyle(.white)
                             .opacity(isSelected ? 1 : 0)

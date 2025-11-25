@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Represents a single SF Symbol with its metadata
 struct SymbolItem: Identifiable, Hashable, Sendable {
@@ -9,8 +9,8 @@ struct SymbolItem: Identifiable, Hashable, Sendable {
     let category: SymbolCategory
 
     init(symbol: SFSymbol, category: SymbolCategory = .all) {
-        self.id = symbol.rawValue
-        self.name = symbol.rawValue
+        self.id = symbol.title
+        self.name = symbol.title
         self.symbol = symbol
         self.category = category
     }
@@ -29,7 +29,7 @@ struct SymbolItem: Identifiable, Hashable, Sendable {
 struct SymbolConfiguration: Sendable {
     var weight: Font.Weight = .regular
     var color: Color = .primary
-    var renderingMode: SymbolRenderingMode = .monochrome
+    var renderingMode: RenderingMode = .monochrome
 
     static let `default` = SymbolConfiguration()
 }

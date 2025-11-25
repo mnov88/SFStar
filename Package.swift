@@ -2,7 +2,7 @@
 import PackageDescription
 
 var dependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/SFSafeSymbols/SFSafeSymbols.git", from: "5.3.0")
+    .package(url: "https://github.com/Rspoon3/SFSymbols.git", from: "5.0.0")
 ]
 
 #if os(macOS)
@@ -36,7 +36,7 @@ let package = Package(
     targets: [
         .target(
             name: "SFSymbolsBrowser",
-            dependencies: ["SFSafeSymbols"],
+            dependencies: ["SFSymbols"],
             path: "SFSymbolsBrowser",
             plugins: lintPlugins
         ),

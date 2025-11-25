@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Badge showing iOS version compatibility for a symbol
 struct CompatibilityBadge: View {
@@ -19,7 +19,7 @@ struct CompatibilityBadge: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Image(systemSymbol: isCompatible ? .checkmarkCircleFill : .exclamationmarkTriangleFill)
+            Image(symbol: isCompatible ? .checkmarkCircleFill : .exclamationmarkTriangleFill)
                 .font(.caption2)
                 .foregroundStyle(isCompatible ? .green : .orange)
 
@@ -58,7 +58,7 @@ struct PremiumCompatibilityBadge: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemSymbol: isCompatible ? .checkmarkCircleFill : .exclamationmarkTriangleFill)
+            Image(symbol: isCompatible ? .checkmarkCircleFill : .exclamationmarkTriangleFill)
                 .font(.caption)
                 .foregroundStyle(isCompatible ? .green : .orange)
 
@@ -184,7 +184,7 @@ struct CompactCompatibilityBadge: View {
     }
 
     var body: some View {
-        Image(systemSymbol: isCompatible ? .checkmarkCircleFill : .exclamationmarkTriangleFill)
+        Image(symbol: isCompatible ? .checkmarkCircleFill : .exclamationmarkTriangleFill)
             .font(.caption)
             .foregroundStyle(isCompatible ? .green : .orange)
             .help("Requires iOS \(String(format: "%.0f", minimumVersion))+")

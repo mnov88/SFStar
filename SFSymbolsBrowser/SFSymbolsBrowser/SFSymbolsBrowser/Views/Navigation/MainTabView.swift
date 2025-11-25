@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Main tab-based navigation for iPhone
 struct MainTabView: View {
@@ -38,7 +38,7 @@ struct MainTabView: View {
                 Label {
                     Text("Search")
                 } icon: {
-                    Image(systemSymbol: selectedTab == .search ? Tab.search.selectedIcon : Tab.search.icon)
+                    Image(symbol: selectedTab == .search ? Tab.search.selectedIcon : Tab.search.icon)
                 }
             }
             .tag(Tab.search)
@@ -51,7 +51,7 @@ struct MainTabView: View {
                 Label {
                     Text("Favorites")
                 } icon: {
-                    Image(systemSymbol: selectedTab == .favorites ? Tab.favorites.selectedIcon : Tab.favorites.icon)
+                    Image(symbol: selectedTab == .favorites ? Tab.favorites.selectedIcon : Tab.favorites.icon)
                 }
             }
             .tag(Tab.favorites)
@@ -65,7 +65,7 @@ struct MainTabView: View {
                 Label {
                     Text("Settings")
                 } icon: {
-                    Image(systemSymbol: selectedTab == .settings ? Tab.settings.selectedIcon : Tab.settings.icon)
+                    Image(symbol: selectedTab == .settings ? Tab.settings.selectedIcon : Tab.settings.icon)
                 }
             }
             .tag(Tab.settings)

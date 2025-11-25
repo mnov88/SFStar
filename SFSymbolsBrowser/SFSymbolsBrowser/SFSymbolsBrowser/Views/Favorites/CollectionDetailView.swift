@@ -1,5 +1,5 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Detail view for a single collection
 struct CollectionDetailView: View {
@@ -126,7 +126,7 @@ struct CollectionDetailView: View {
                     Label("Delete Collection", systemImage: "trash")
                 }
             } label: {
-                Image(systemSymbol: .ellipsisCircle)
+                Image(symbol: .ellipsisCircle)
             }
         }
 

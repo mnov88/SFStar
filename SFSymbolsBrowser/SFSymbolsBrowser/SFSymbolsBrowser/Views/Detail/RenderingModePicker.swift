@@ -1,12 +1,12 @@
 import SwiftUI
-import SFSafeSymbols
+import SFSymbols
 
 /// Picker for selecting SF Symbol rendering modes
 struct RenderingModePicker: View {
-    @Binding var selectedMode: SymbolRenderingMode
+    @Binding var selectedMode: RenderingMode
     var symbolName: String = "heart.fill"
     var color: Color = .blue
-    var onModeChange: ((SymbolRenderingMode) -> Void)?
+    var onModeChange: ((RenderingMode) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -15,7 +15,7 @@ struct RenderingModePicker: View {
 
             // Segmented picker
             Picker("Rendering Mode", selection: $selectedMode) {
-                ForEach(SymbolRenderingMode.allCases) { mode in
+                ForEach(RenderingMode.allCases) { mode in
                     Text(mode.displayName).tag(mode)
                 }
             }
@@ -33,11 +33,11 @@ struct RenderingModePicker: View {
 
             // Preview strip
             HStack(spacing: 16) {
-                ForEach(SymbolRenderingMode.allCases) { mode in
+                ForEach(RenderingMode.allCases) { mode in
                     VStack(spacing: 4) {
                         Image(systemName: symbolName)
                             .font(.title2)
-                            .symbolRenderingMode(mode)
+                            .symbolRenderingMode(mode.swiftUIMode)
                             .foregroundStyle(color)
                             .frame(width: 40, height: 40)
                             .background(
@@ -65,10 +65,10 @@ struct RenderingModePicker: View {
 
 // MARK: - Premium Rendering Mode Picker
 struct PremiumRenderingModePicker: View {
-    @Binding var selectedMode: SymbolRenderingMode
+    @Binding var selectedMode: RenderingMode
     var symbolName: String = "heart.fill"
     var color: Color = .blue
-    var onModeChange: ((SymbolRenderingMode) -> Void)?
+    var onModeChange: ((RenderingMode) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
@@ -77,7 +77,7 @@ struct PremiumRenderingModePicker: View {
 
             // Mode cards
             HStack(spacing: DesignSystem.Spacing.sm) {
-                ForEach(SymbolRenderingMode.allCases) { mode in
+                ForEach(RenderingMode.allCases) { mode in
                     PremiumRenderingModeCard(
                         mode: mode,
                         symbolName: symbolName,
@@ -95,7 +95,7 @@ struct PremiumRenderingModePicker: View {
 
             // Selected mode description
             HStack {
-                Image(systemSymbol: .infoCircle)
+                Image(symbol: .infoCircle)
                     .foregroundStyle(.secondary)
                 Text(selectedMode.description)
                     .font(.caption)
@@ -110,7 +110,7 @@ struct PremiumRenderingModePicker: View {
 
 // MARK: - Premium Rendering Mode Card
 struct PremiumRenderingModeCard: View {
-    let mode: SymbolRenderingMode
+    let mode: RenderingMode
     let symbolName: String
     let color: Color
     let isSelected: Bool
@@ -122,7 +122,7 @@ struct PremiumRenderingModeCard: View {
                 // Symbol preview
                 Image(systemName: symbolName)
                     .font(.title2)
-                    .symbolRenderingMode(mode)
+                    .symbolRenderingMode(mode.swiftUIMode)
                     .foregroundStyle(color)
                     .frame(width: 44, height: 44)
 
@@ -158,18 +158,18 @@ struct PremiumRenderingModeCard: View {
 
 // MARK: - Compact Rendering Mode Picker
 struct CompactRenderingModePicker: View {
-    @Binding var selectedMode: SymbolRenderingMode
+    @Binding var selectedMode: RenderingMode
 
     var body: some View {
         Menu {
-            ForEach(SymbolRenderingMode.allCases) { mode in
+            ForEach(RenderingMode.allCases) { mode in
                 Button {
                     selectedMode = mode
                 } label: {
                     HStack {
                         Text(mode.displayName)
                         if selectedMode == mode {
-                            Image(systemSymbol: .checkmark)
+                            Image(symbol: .checkmark)
                         }
                     }
                 }
@@ -180,7 +180,7 @@ struct CompactRenderingModePicker: View {
                     .foregroundStyle(.secondary)
                 Text(selectedMode.displayName)
                     .fontWeight(.medium)
-                Image(systemSymbol: .chevronDown)
+                Image(symbol: .chevronDown)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -194,7 +194,7 @@ struct CompactRenderingModePicker: View {
 
 #Preview {
     struct PreviewWrapper: View {
-        @State private var mode: SymbolRenderingMode = .hierarchical
+        @State private var mode: RenderingMode = .hierarchical
 
         var body: some View {
             VStack(spacing: 32) {
@@ -203,7 +203,7 @@ struct CompactRenderingModePicker: View {
 
                 Image(systemName: "heart.fill")
                     .font(.system(size: 60))
-                    .symbolRenderingMode(mode)
+                    .symbolRenderingMode(mode.swiftUIMode)
                     .foregroundStyle(.pink)
             }
         }
@@ -214,7 +214,7 @@ struct CompactRenderingModePicker: View {
 
 #Preview("Premium") {
     struct PreviewWrapper: View {
-        @State private var mode: SymbolRenderingMode = .hierarchical
+        @State private var mode: RenderingMode = .hierarchical
 
         var body: some View {
             VStack(spacing: 32) {
@@ -222,7 +222,7 @@ struct CompactRenderingModePicker: View {
 
                 Image(systemName: "heart.fill")
                     .font(.system(size: 60))
-                    .symbolRenderingMode(mode)
+                    .symbolRenderingMode(mode.swiftUIMode)
                     .foregroundStyle(.pink)
             }
             .padding()
@@ -235,7 +235,7 @@ struct CompactRenderingModePicker: View {
 
 #Preview("Compact") {
     struct PreviewWrapper: View {
-        @State private var mode: SymbolRenderingMode = .hierarchical
+        @State private var mode: RenderingMode = .hierarchical
 
         var body: some View {
             CompactRenderingModePicker(selectedMode: $mode)
